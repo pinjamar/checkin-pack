@@ -1,0 +1,33 @@
+---
+import Public from '../../layouts/Public.astro'
+import RegistrationForm from '../../components/guest/RegistrationForm'
+import { supabaseAdmin } from '../../lib/supabase'
+
+const { token } = Astro.params
+
+if (!token) {
+  return new Response('Not found', { status: 404 })
+}
+
+// Find booking by token
+const { data: booking } = await supabaseAdmin
+  .from('bookings')
+  .select('*, apartments(name)')
+  .eq('pre_arrival_token', token)
+  .single()
+
+if (!booking) {
+  return new Response('Invalid or expired registration link', { status: 404 })
+}
+
+const apartmentName = (booking as any).apartments?.name || 'Apartment'
+---
+
+<Public title={`Registration — ${apartmentName}`}>
+  <RegistrationForm
+    client:load
+    token={token}
+    apartmentName={apartmentName}
+    arrivalDate={booking.arrival_date}
+  />
+</Public>

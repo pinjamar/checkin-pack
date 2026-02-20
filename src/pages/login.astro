@@ -1,0 +1,89 @@
+---
+import Base from '../layouts/Base.astro'
+
+// If already logged in, redirect to dashboard
+const accessToken = Astro.cookies.get('sb-access-token')?.value
+if (accessToken) {
+  return Astro.redirect('/dashboard')
+}
+---
+
+<Base title="Log in">
+  <div class="min-h-screen flex items-center justify-center px-4">
+    <div class="w-full max-w-sm">
+      <div class="text-center mb-8">
+        <a href="/" class="text-2xl font-bold text-brand">CheckinPack</a>
+        <p class="mt-2 text-gray-600">Welcome back</p>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            required
+            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+            placeholder="ivan@example.com"
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            required
+            class="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand focus:border-transparent"
+          />
+        </div>
+
+        <div id="error-msg" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
+
+        <button
+          type="submit"
+          class="w-full py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark transition-colors text-sm"
+        >
+          Log in
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-sm text-gray-500">
+        Don't have an account? <a href="/signup" class="text-brand font-medium hover:underline">Sign up</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    import { supabase } from '../lib/supabase'
+
+    const form = document.getElementById('login-form') as HTMLFormElement
+    const errorMsg = document.getElementById('error-msg') as HTMLDivElement
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      errorMsg.classList.add('hidden')
+
+      const email = (document.getElementById('email') as HTMLInputElement).value
+      const password = (document.getElementById('password') as HTMLInputElement).value
+
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      })
+
+      if (error) {
+        errorMsg.textContent = error.message
+        errorMsg.classList.remove('hidden')
+        return
+      }
+
+      // Set cookies for SSR auth
+      document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=3600; SameSite=Lax`
+      document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=604800; SameSite=Lax`
+
+      window.location.href = '/dashboard'
+    })
+  </script>
+</Base>

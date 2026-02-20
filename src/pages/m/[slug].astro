@@ -1,0 +1,64 @@
+---
+import Public from '../../layouts/Public.astro'
+import WelcomeGuide from '../../components/guest/WelcomeGuide'
+import { supabaseAdmin } from '../../lib/supabase'
+
+const { slug } = Astro.params
+
+if (!slug) {
+  return Astro.redirect('/404')
+}
+
+// Fetch apartment by slug
+const { data: apartment } = await supabaseAdmin
+  .from('apartments')
+  .select('*')
+  .eq('slug', slug)
+  .eq('is_active', true)
+  .single()
+
+if (!apartment) {
+  return new Response('Not found', { status: 404 })
+}
+
+// Fetch guide content
+const { data: guide } = await supabaseAdmin
+  .from('guide_content')
+  .select('*')
+  .eq('apartment_id', apartment.id)
+  .single()
+
+const guideData = {
+  apartment: {
+    name: apartment.name,
+    address: apartment.address,
+    cover_image_url: apartment.cover_image_url,
+  },
+  guide: guide || {
+    wifi_name: null,
+    wifi_password: null,
+    checkin_time: null,
+    checkout_time: null,
+    house_rules: null,
+    local_tips: [],
+    emergency_contacts: [],
+    custom_sections: [],
+  },
+}
+---
+
+<Public title={`${apartment.name} — Welcome Guide`}>
+  <WelcomeGuide client:load data={guideData} />
+
+  <!-- Log scan event -->
+  <script define:vars={{ apartmentId: apartment.id }}>
+    fetch('/api/scan', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apartment_id: apartmentId,
+        device_type: /Mobile|Android|iPhone/i.test(navigator.userAgent) ? 'mobile' : 'desktop',
+      }),
+    }).catch(() => {})
+  </script>
+</Public>

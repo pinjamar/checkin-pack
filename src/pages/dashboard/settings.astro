@@ -1,0 +1,71 @@
+---
+import Dashboard from '../../layouts/Dashboard.astro'
+import { supabaseAdmin } from '../../lib/supabase'
+
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/login')
+
+const { data: owner } = await supabaseAdmin
+  .from('owners')
+  .select('*')
+  .eq('id', user.id)
+  .single()
+
+const plan = owner?.plan || 'free'
+---
+
+<Dashboard title="Settings">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+
+  <!-- Account info -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6 max-w-lg">
+    <h2 class="font-semibold text-gray-800 mb-4">Account</h2>
+    <div class="space-y-3 text-sm">
+      <div>
+        <span class="text-gray-500">Email:</span>
+        <span class="ml-2 text-gray-900">{user.email}</span>
+      </div>
+      <div>
+        <span class="text-gray-500">Name:</span>
+        <span class="ml-2 text-gray-900">{owner?.full_name || '—'}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Plan info -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5 max-w-lg">
+    <h2 class="font-semibold text-gray-800 mb-4">Plan</h2>
+
+    {plan === 'free' ? (
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Free</span>
+          <span class="text-sm text-gray-500">1 apartment, 3 bookings/month</span>
+        </div>
+
+        <div class="bg-brand-light rounded-lg p-4 mt-4">
+          <h3 class="font-semibold text-brand mb-2">Upgrade to Pro</h3>
+          <ul class="text-sm text-gray-600 space-y-1 mb-4">
+            <li>Unlimited apartments</li>
+            <li>Unlimited bookings</li>
+            <li>Priority support</li>
+          </ul>
+          <div class="flex gap-3">
+            <button class="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors">
+              €80/year — save €40
+            </button>
+            <button class="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+              €10/month
+            </button>
+          </div>
+          <p class="text-xs text-gray-500 mt-2">Pay once before the season, covered until October.</p>
+        </div>
+      </div>
+    ) : (
+      <div class="flex items-center gap-2">
+        <span class="px-2.5 py-1 text-xs font-medium bg-brand-light text-brand rounded-full">Pro</span>
+        <span class="text-sm text-gray-500">Unlimited apartments and bookings</span>
+      </div>
+    )}
+  </div>
+</Dashboard>

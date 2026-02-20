@@ -1,0 +1,113 @@
+---
+import Dashboard from '../../layouts/Dashboard.astro'
+import ApartmentCard from '../../components/dashboard/ApartmentCard'
+import { supabaseAdmin } from '../../lib/supabase'
+
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/login')
+
+// Fetch apartments
+const { data: apartments } = await supabaseAdmin
+  .from('apartments')
+  .select('*')
+  .eq('owner_id', user.id)
+  .order('created_at', { ascending: false })
+
+// Fetch booking stats per apartment
+const startOfMonth = new Date()
+startOfMonth.setDate(1)
+startOfMonth.setHours(0, 0, 0, 0)
+
+const apartmentStats: Record<string, { bookingsThisMonth: number; pendingRegistrations: number }> = {}
+
+if (apartments && apartments.length > 0) {
+  for (const apt of apartments) {
+    const { count: bookingCount } = await supabaseAdmin
+      .from('bookings')
+      .select('*', { count: 'exact', head: true })
+      .eq('apartment_id', apt.id)
+      .gte('created_at', startOfMonth.toISOString())
+
+    const { count: pendingCount } = await supabaseAdmin
+      .from('bookings')
+      .select('*', { count: 'exact', head: true })
+      .eq('apartment_id', apt.id)
+      .eq('registration_status', 'pending')
+
+    apartmentStats[apt.id] = {
+      bookingsThisMonth: bookingCount || 0,
+      pendingRegistrations: pendingCount || 0,
+    }
+  }
+}
+
+// Check plan
+const { data: owner } = await supabaseAdmin
+  .from('owners')
+  .select('plan')
+  .eq('id', user.id)
+  .single()
+
+const plan = owner?.plan || 'free'
+const canAddMore = plan === 'pro' || (apartments?.length || 0) < 1
+---
+
+<Dashboard title="Apartments">
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-bold text-gray-900">Your Apartments</h1>
+    {canAddMore ? (
+      <a
+        href="/dashboard/apartment/new"
+        class="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand-dark transition-colors"
+      >
+        + Add apartment
+      </a>
+    ) : (
+      <div class="text-right">
+        <span class="text-sm text-gray-500">Free plan: 1 apartment</span>
+        <a href="/dashboard/settings" class="block text-sm text-brand font-medium hover:underline">
+          Upgrade to Pro
+        </a>
+      </div>
+    )}
+  </div>
+
+  {!apartments || apartments.length === 0 ? (
+    <div class="text-center py-16 bg-white rounded-xl border border-gray-200">
+      <span class="text-5xl mb-4 block">🏠</span>
+      <h2 class="text-xl font-semibold text-gray-800 mb-2">No apartments yet</h2>
+      <p class="text-gray-500 mb-6">Create your first apartment to get started with a digital welcome guide.</p>
+      <a
+        href="/dashboard/apartment/new"
+        class="inline-block px-6 py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark transition-colors"
+      >
+        Create your first apartment
+      </a>
+    </div>
+  ) : (
+    <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {apartments.map((apt) => (
+        <ApartmentCard
+          client:load
+          id={apt.id}
+          name={apt.name}
+          slug={apt.slug}
+          address={apt.address}
+          cover_image_url={apt.cover_image_url}
+          is_active={apt.is_active}
+          bookingsThisMonth={apartmentStats[apt.id]?.bookingsThisMonth || 0}
+          pendingRegistrations={apartmentStats[apt.id]?.pendingRegistrations || 0}
+        />
+      ))}
+    </div>
+  )}
+
+  {plan === 'free' && apartments && apartments.length > 0 && (
+    <div class="mt-8 p-4 bg-brand-light rounded-xl border border-brand/20">
+      <p class="text-sm text-brand">
+        <strong>Free plan:</strong> 1 apartment, 3 bookings/month.
+        <a href="/dashboard/settings" class="underline ml-1">Upgrade to Pro (€80/year)</a> for unlimited apartments and bookings.
+      </p>
+    </div>
+  )}
+</Dashboard>
