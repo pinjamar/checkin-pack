@@ -1,18 +1,19 @@
 import type { APIRoute } from 'astro'
 import { getSupabaseAdmin } from '../../../lib/supabase-server'
 
-async function getUser(cookies: any) {
-  const supabaseAdmin = getSupabaseAdmin()
+async function getUser(cookies: any, serviceKey: string) {
+  const supabaseAdmin = getSupabaseAdmin(serviceKey)
   const accessToken = cookies.get('sb-access-token')?.value
   if (!accessToken) return null
   const { data: { user } } = await supabaseAdmin.auth.getUser(accessToken)
   return user
 }
 
-export const GET: APIRoute = async ({ url, cookies }) => {
+export const GET: APIRoute = async (context) => {
+  const { url, cookies } = context
   try {
-    const supabaseAdmin = getSupabaseAdmin()
-    const user = await getUser(cookies)
+    const supabaseAdmin = getSupabaseAdmin(context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
+    const user = await getUser(cookies, context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
@@ -48,10 +49,11 @@ export const GET: APIRoute = async ({ url, cookies }) => {
   }
 }
 
-export const POST: APIRoute = async ({ request, cookies }) => {
+export const POST: APIRoute = async (context) => {
+  const { request, cookies } = context
   try {
-    const supabaseAdmin = getSupabaseAdmin()
-    const user = await getUser(cookies)
+    const supabaseAdmin = getSupabaseAdmin(context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
+    const user = await getUser(cookies, context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }

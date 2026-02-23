@@ -2,7 +2,7 @@
 import Public from '../../layouts/Public.astro'
 import WelcomeGuide from '../../components/guest/WelcomeGuide'
 import { getSupabaseAdmin } from '../../lib/supabase-server'
-const supabaseAdmin = getSupabaseAdmin()
+const supabaseAdmin = getSupabaseAdmin(Astro.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
 
 const { slug } = Astro.params
 

@@ -1,9 +1,10 @@
 import type { APIRoute } from 'astro'
 import { getSupabaseAdmin } from '../../../../lib/supabase-server'
 
-export const POST: APIRoute = async ({ params, cookies }) => {
+export const POST: APIRoute = async (context) => {
+  const { params, cookies } = context
   try {
-    const supabaseAdmin = getSupabaseAdmin()
+    const supabaseAdmin = getSupabaseAdmin(context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
     const accessToken = cookies.get('sb-access-token')?.value
     if (!accessToken) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })

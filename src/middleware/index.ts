@@ -2,7 +2,7 @@ import { defineMiddleware } from 'astro:middleware'
 import { getSupabaseAdmin } from '../lib/supabase-server'
 
 export const onRequest = defineMiddleware(async (context, next) => {
-  const supabaseAdmin = getSupabaseAdmin()
+  const supabaseAdmin = getSupabaseAdmin(context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
   const { pathname } = context.url
 
   // Only protect /dashboard routes
