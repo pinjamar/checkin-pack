@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { supabaseAdmin } from '../../../lib/supabase'
+import { supabaseAdmin } from '../../../lib/supabase-server'
 
 async function getUser(cookies: any) {
   const accessToken = cookies.get('sb-access-token')?.value

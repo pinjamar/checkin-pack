@@ -1,7 +1,7 @@
 ---
 import Dashboard from '../../../../layouts/Dashboard.astro'
 import QRDownloader from '../../../../components/qr/QRDownloader'
-import { supabaseAdmin } from '../../../../lib/supabase'
+import { supabaseAdmin } from '../../../../lib/supabase-server'
 
 const user = Astro.locals.user
 if (!user) return Astro.redirect('/login')

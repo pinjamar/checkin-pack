@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro'
-import { supabaseAdmin } from '../../../lib/supabase'
+import { supabaseAdmin } from '../../../lib/supabase-server'
 
 export const GET: APIRoute = async ({ cookies }) => {
   try {

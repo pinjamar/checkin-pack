@@ -97,19 +97,12 @@ if (accessToken) {
       }
 
       if (data.session) {
-        // Create owner record
-        await supabase.from('owners').insert({
-          id: data.user!.id,
-          full_name: fullName,
-        })
-
-        // Set cookies for SSR auth
+        // Owner record is created automatically via DB trigger
         document.cookie = `sb-access-token=${data.session.access_token}; path=/; max-age=3600; SameSite=Lax`
         document.cookie = `sb-refresh-token=${data.session.refresh_token}; path=/; max-age=604800; SameSite=Lax`
-
         window.location.href = '/dashboard'
       } else {
-        // Email confirmation required
+        // Email confirmation required (disable in Supabase Auth settings for dev)
         errorMsg.textContent = 'Check your email for a confirmation link.'
         errorMsg.classList.remove('hidden')
         errorMsg.classList.remove('text-red-600', 'bg-red-50')

@@ -1,6 +1,6 @@
 ---
 import Dashboard from '../../layouts/Dashboard.astro'
-import { supabaseAdmin } from '../../lib/supabase'
+import { supabaseAdmin } from '../../lib/supabase-server'
 
 const user = Astro.locals.user
 if (!user) return Astro.redirect('/login')

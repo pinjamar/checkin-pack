@@ -1,5 +1,5 @@
 import { defineMiddleware } from 'astro:middleware'
-import { supabaseAdmin } from '../lib/supabase'
+import { supabaseAdmin } from '../lib/supabase-server'
 
 export const onRequest = defineMiddleware(async (context, next) => {
   const { pathname } = context.url
