@@ -1,7 +1,8 @@
 ---
 import Public from '../../layouts/Public.astro'
 import RegistrationForm from '../../components/guest/RegistrationForm'
-import { supabaseAdmin } from '../../lib/supabase-server'
+import { getSupabaseAdmin } from '../../lib/supabase-server'
+const supabaseAdmin = getSupabaseAdmin()
 
 const { token } = Astro.params
 

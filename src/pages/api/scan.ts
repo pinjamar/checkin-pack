@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro'
-import { supabaseAdmin } from '../../lib/supabase-server'
+import { getSupabaseAdmin } from '../../lib/supabase-server'
 
 export const POST: APIRoute = async ({ request }) => {
   try {
+    const supabaseAdmin = getSupabaseAdmin()
     const { apartment_id, device_type } = await request.json()
 
     await supabaseAdmin.from('scan_events').insert({
