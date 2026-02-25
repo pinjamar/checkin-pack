@@ -1,0 +1,24 @@
+name = "checkin-pack"
+main = "dist/_worker.js"
+compatibility_date = "2025-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Static assets served alongside the Worker
+assets = { directory = "dist", binding = "ASSETS" }
+
+# Cron triggers (Croatian time = UTC+2 in summer / UTC+1 in winter)
+# 0 8 * * *  → 08:00 UTC = 10:00 HR: send pre-arrival emails + health check
+# 0 18 * * * → 18:00 UTC = 20:00 HR: send checkout reminders + health check
+[triggers]
+crons = ["0 8 * * *", "0 18 * * *"]
+
+# Non-secret runtime variables
+[vars]
+PUBLIC_SUPABASE_URL = "https://yrsxyfrwsaujwtnzamuf.supabase.co"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# - RESEND_API_KEY
+# - SUPABASE_SERVICE_ROLE_KEY
+# - ADMIN_ALERT_EMAIL   ← developer email for eVisitor down alerts
+# - STRIPE_SECRET_KEY
+# - STRIPE_WEBHOOK_SECRET

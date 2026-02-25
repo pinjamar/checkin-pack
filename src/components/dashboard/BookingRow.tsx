@@ -70,7 +70,7 @@ export default function BookingRow({
             disabled={sending}
             className="px-3 py-1.5 text-xs font-medium bg-[#1a6b4a] text-white rounded-lg hover:bg-[#145538] disabled:opacity-50 transition-colors"
           >
-            {sending ? 'Sending...' : 'Send Link'}
+            {sending ? 'Sending...' : 'Send now'}
           </button>
         )}
         {sent && registration_status !== 'completed' && (

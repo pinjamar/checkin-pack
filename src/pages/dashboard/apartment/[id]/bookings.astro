@@ -27,9 +27,9 @@ const { data: bookings } = await supabaseAdmin
   .eq('apartment_id', id)
   .order('arrival_date', { ascending: false })
 
-// Fetch completed registrations
+// Fetch registrations for bookings with guest data (completed or already registered in eVisitor)
 const completedBookingIds = (bookings || [])
-  .filter((b) => b.registration_status === 'completed')
+  .filter((b) => b.registration_status === 'completed' || b.registration_status === 'registered')
   .map((b) => b.id)
 
 let registrations: any[] = []
@@ -107,6 +107,8 @@ if (completedBookingIds.length > 0) {
         return (
           <RegistrationCard
             client:load
+            bookingId={reg.booking_id}
+            registrationStatus={booking?.registration_status || 'completed'}
             guest={{
               full_name: reg.full_name,
               document_type: reg.document_type,

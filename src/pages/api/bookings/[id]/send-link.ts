@@ -32,7 +32,7 @@ export const POST: APIRoute = async (context) => {
 
     // Send email via Resend
     const { Resend } = await import('resend')
-    const resend = new Resend(import.meta.env.RESEND_API_KEY)
+    const resend = new Resend(context.locals.runtime.env.RESEND_API_KEY)
 
     const registrationUrl = `${new URL('/register/' + booking.pre_arrival_token, 'https://checkinpack.hr').href}`
 
