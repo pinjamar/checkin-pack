@@ -42,35 +42,18 @@ if (apartments && apartments.length > 0) {
   }
 }
 
-// Check plan
-const { data: owner } = await supabaseAdmin
-  .from('owners')
-  .select('plan')
-  .eq('id', user.id)
-  .single()
-
-const plan = owner?.plan || 'free'
-const canAddMore = plan === 'pro' || (apartments?.length || 0) < 1
+const plan = 'free'
 ---
 
 <Dashboard title="Apartments">
   <div class="flex items-center justify-between mb-6">
     <h1 class="text-2xl font-bold text-gray-900">Your Apartments</h1>
-    {canAddMore ? (
-      <a
-        href="/dashboard/apartment/new"
-        class="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand-dark transition-colors"
-      >
-        + Add apartment
-      </a>
-    ) : (
-      <div class="text-right">
-        <span class="text-sm text-gray-500">Free plan: 1 apartment</span>
-        <a href="/dashboard/settings" class="block text-sm text-brand font-medium hover:underline">
-          Upgrade to Pro
-        </a>
-      </div>
-    )}
+    <a
+      href="/dashboard/apartment/new"
+      class="px-4 py-2 bg-brand text-white rounded-lg text-sm font-medium hover:bg-brand-dark transition-colors"
+    >
+      + Add apartment
+    </a>
   </div>
 
   {!apartments || apartments.length === 0 ? (
@@ -103,12 +86,4 @@ const canAddMore = plan === 'pro' || (apartments?.length || 0) < 1
     </div>
   )}
 
-  {plan === 'free' && apartments && apartments.length > 0 && (
-    <div class="mt-8 p-4 bg-brand-light rounded-xl border border-brand/20">
-      <p class="text-sm text-brand">
-        <strong>Free plan:</strong> 1 apartment, 3 bookings/month.
-        <a href="/dashboard/settings" class="underline ml-1">Upgrade to Pro (€80/year)</a> for unlimited apartments and bookings.
-      </p>
-    </div>
-  )}
 </Dashboard>

@@ -62,11 +62,11 @@ if (completedBookingIds.length > 0) {
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Arrival date *</label>
-        <input type="date" id="arrival_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
+        <input type="text" id="arrival_date" required placeholder="DD/MM/YYYY" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Departure date *</label>
-        <input type="date" id="departure_date" required class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
+        <input type="text" id="departure_date" required placeholder="DD/MM/YYYY" class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand" />
       </div>
       <div class="sm:col-span-2">
         <div id="booking-error" class="hidden text-sm text-red-600 bg-red-50 p-2 rounded-lg mb-2"></div>
@@ -127,7 +127,26 @@ if (completedBookingIds.length > 0) {
     </div>
   )}
 
-  <script define:vars={{ apartmentId: id }}>
+  <script define:vars={{ apartmentId: id }} is:inline>
+    function toIso(ddmmyyyy) {
+      const parts = ddmmyyyy.split('/')
+      if (parts.length !== 3) return ddmmyyyy
+      const [d, m, y] = parts
+      return `${y}-${m.padStart(2, '0')}-${d.padStart(2, '0')}`
+    }
+
+    function autoDate(id) {
+      document.getElementById(id).addEventListener('input', function () {
+        let v = this.value.replace(/\D/g, '')
+        if (v.length > 2) v = v.slice(0, 2) + '/' + v.slice(2)
+        if (v.length > 5) v = v.slice(0, 5) + '/' + v.slice(5)
+        if (v.length > 10) v = v.slice(0, 10)
+        this.value = v
+      })
+    }
+    autoDate('arrival_date')
+    autoDate('departure_date')
+
     const form = document.getElementById('booking-form')
     const errorEl = document.getElementById('booking-error')
 
@@ -139,8 +158,8 @@ if (completedBookingIds.length > 0) {
         apartment_id: apartmentId,
         guest_name: document.getElementById('guest_name').value || null,
         guest_email: document.getElementById('guest_email').value || null,
-        arrival_date: document.getElementById('arrival_date').value,
-        departure_date: document.getElementById('departure_date').value,
+        arrival_date: toIso(document.getElementById('arrival_date').value),
+        departure_date: toIso(document.getElementById('departure_date').value),
       }
 
       const res = await fetch('/api/bookings', {

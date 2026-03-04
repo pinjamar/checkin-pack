@@ -77,28 +77,18 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: 'Not found' }), { status: 404 })
     }
 
-    // Check plan limits for bookings this month
-    const { data: owner } = await supabaseAdmin
-      .from('owners')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
-
-    const startOfMonth = new Date()
-    startOfMonth.setDate(1)
-    startOfMonth.setHours(0, 0, 0, 0)
-
-    const { count } = await supabaseAdmin
+    // Check for overlapping bookings
+    const { count: overlapping } = await supabaseAdmin
       .from('bookings')
       .select('*', { count: 'exact', head: true })
       .eq('apartment_id', apartment_id)
-      .gte('created_at', startOfMonth.toISOString())
+      .lt('arrival_date', departure_date)
+      .gt('departure_date', arrival_date)
 
-    const maxBookings = owner?.plan === 'pro' ? 999 : 3
-    if ((count || 0) >= maxBookings) {
+    if ((overlapping || 0) > 0) {
       return new Response(
-        JSON.stringify({ error: 'Booking limit reached this month. Upgrade to Pro for unlimited bookings.' }),
-        { status: 403 }
+        JSON.stringify({ error: 'Apartment is already booked during these dates.' }),
+        { status: 409 }
       )
     }
 

@@ -43,27 +43,8 @@ export const POST: APIRoute = async (context) => {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
     }
 
-    // Check plan limits
-    const { data: owner } = await supabaseAdmin
-      .from('owners')
-      .select('plan')
-      .eq('id', user.id)
-      .single()
 
-    const { count } = await supabaseAdmin
-      .from('apartments')
-      .select('*', { count: 'exact', head: true })
-      .eq('owner_id', user.id)
-
-    const maxApartments = owner?.plan === 'pro' ? 999 : 1
-    if ((count || 0) >= maxApartments) {
-      return new Response(
-        JSON.stringify({ error: 'Apartment limit reached. Upgrade to Pro for unlimited apartments.' }),
-        { status: 403 }
-      )
-    }
-
-    const body = await request.json()
+const body = await request.json()
     const { name, address } = body
 
     if (!name) {

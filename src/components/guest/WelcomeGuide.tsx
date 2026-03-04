@@ -206,7 +206,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
 
         {/* House Rules */}
         {guide.house_rules && (
-          <CollapsibleSection title="House Rules" icon="📋">
+          <CollapsibleSection title="House Rules / Kućni red" icon="📋">
             <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
               {guide.house_rules}
             </div>
@@ -240,6 +240,16 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
           </CollapsibleSection>
         )}
 
+        {/* Custom Sections */}
+        {guide.custom_sections &&
+          guide.custom_sections.map((section) => (
+            <CollapsibleSection key={section.id} title={section.title} icon="📄">
+              <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
+                {section.content}
+              </div>
+            </CollapsibleSection>
+          ))}
+
         {/* Emergency Contacts */}
         {guide.emergency_contacts && guide.emergency_contacts.length > 0 && (
           <CollapsibleSection title="Emergency Contacts" icon="🆘">
@@ -271,15 +281,16 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
           </CollapsibleSection>
         )}
 
-        {/* Custom Sections */}
-        {guide.custom_sections &&
-          guide.custom_sections.map((section) => (
-            <CollapsibleSection key={section.id} title={section.title} icon="📄">
-              <div className="text-sm text-gray-600 leading-relaxed whitespace-pre-wrap">
-                {section.content}
-              </div>
-            </CollapsibleSection>
-          ))}
+        {/* Written Complaint Notice */}
+        <div className="border border-gray-200 rounded-xl p-4 text-xs text-gray-500 leading-relaxed space-y-2">
+          <p className="font-semibold text-gray-700">Written Complaint Notice / Obavijest o pisanom prigovoru</p>
+          <p>
+            You have the right to submit a written complaint regarding our services. Complaints may be submitted by email or post to the accommodation address{apartment.address ? `: ${apartment.address}` : ''}. We will respond within 15 days of receipt.
+          </p>
+          <p>
+            Imate pravo podnijeti pisani prigovor na naše usluge. Prigovore možete podnijeti putem e-pošte ili poštom na adresu smještaja{apartment.address ? `: ${apartment.address}` : ''}. Odgovorit ćemo u roku od 15 dana od primitka.
+          </p>
+        </div>
 
         {/* Footer */}
         <div className="pt-8 pb-6 text-center">

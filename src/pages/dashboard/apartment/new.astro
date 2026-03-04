@@ -33,10 +33,34 @@ if (!user) return Astro.redirect('/login')
         />
       </div>
 
+      <!-- Copy guide section -->
+      <div class="border border-gray-200 rounded-xl p-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-sm font-medium text-gray-700">Copy guide from existing apartment <span class="text-gray-400 font-normal">(optional)</span></p>
+            <p class="text-xs text-gray-400 mt-0.5">WiFi, house rules, tips and custom sections will be copied over</p>
+          </div>
+          <button type="button" id="toggle-copy" class="text-sm text-brand font-medium hover:underline">
+            Choose
+          </button>
+        </div>
+
+        <div id="copy-panel" class="hidden mt-3 space-y-2">
+          <p id="copy-loading" class="text-sm text-gray-400">Loading apartments...</p>
+          <div id="copy-list" class="space-y-2 max-h-48 overflow-y-auto hidden"></div>
+          <p id="copy-empty" class="text-sm text-gray-400 hidden">No other apartments found.</p>
+          <div id="copy-selected" class="hidden mt-2 flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+            <span class="text-sm text-green-700 font-medium" id="copy-selected-name"></span>
+            <button type="button" id="copy-clear" class="text-xs text-gray-400 hover:text-red-500">Remove</button>
+          </div>
+        </div>
+      </div>
+
       <div id="error-msg" class="hidden text-sm text-red-600 bg-red-50 p-3 rounded-lg"></div>
 
       <button
         type="submit"
+        id="submit-btn"
         class="w-full py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark transition-colors text-sm"
       >
         Create apartment
@@ -47,10 +71,71 @@ if (!user) return Astro.redirect('/login')
   <script>
     const form = document.getElementById('create-form') as HTMLFormElement
     const errorMsg = document.getElementById('error-msg') as HTMLDivElement
+    const toggleBtn = document.getElementById('toggle-copy') as HTMLButtonElement
+    const copyPanel = document.getElementById('copy-panel') as HTMLDivElement
+    const copyLoading = document.getElementById('copy-loading') as HTMLParagraphElement
+    const copyList = document.getElementById('copy-list') as HTMLDivElement
+    const copyEmpty = document.getElementById('copy-empty') as HTMLParagraphElement
+    const copySelected = document.getElementById('copy-selected') as HTMLDivElement
+    const copySelectedName = document.getElementById('copy-selected-name') as HTMLSpanElement
+    const copyClear = document.getElementById('copy-clear') as HTMLButtonElement
+    const submitBtn = document.getElementById('submit-btn') as HTMLButtonElement
+
+    let selectedSourceId: string | null = null
+    let apartmentsLoaded = false
+
+    toggleBtn.addEventListener('click', async () => {
+      if (copyPanel.classList.contains('hidden')) {
+        copyPanel.classList.remove('hidden')
+        toggleBtn.textContent = 'Hide'
+
+        if (!apartmentsLoaded) {
+          apartmentsLoaded = true
+          const res = await fetch('/api/apartments')
+          copyLoading.classList.add('hidden')
+          if (res.ok) {
+            const all = await res.json()
+            if (all.length === 0) {
+              copyEmpty.classList.remove('hidden')
+            } else {
+              copyList.classList.remove('hidden')
+              all.forEach((apt: { id: string; name: string }) => {
+                const btn = document.createElement('button')
+                btn.type = 'button'
+                btn.className = 'w-full text-left px-3 py-2.5 rounded-lg border border-gray-200 hover:border-brand hover:bg-green-50 transition-colors text-sm font-medium text-gray-800'
+                btn.textContent = apt.name
+                btn.addEventListener('click', () => {
+                  selectedSourceId = apt.id
+                  copySelectedName.textContent = apt.name
+                  copySelected.classList.remove('hidden')
+                  copyList.classList.add('hidden')
+                  copyLoading.classList.add('hidden')
+                  copyEmpty.classList.add('hidden')
+                  toggleBtn.textContent = 'Change'
+                })
+                copyList.appendChild(btn)
+              })
+            }
+          }
+        }
+      } else {
+        copyPanel.classList.add('hidden')
+        toggleBtn.textContent = selectedSourceId ? 'Change' : 'Choose'
+      }
+    })
+
+    copyClear.addEventListener('click', () => {
+      selectedSourceId = null
+      copySelected.classList.add('hidden')
+      copyList.classList.remove('hidden')
+      toggleBtn.textContent = 'Choose'
+    })
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault()
       errorMsg.classList.add('hidden')
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Creating...'
 
       const name = (document.getElementById('name') as HTMLInputElement).value
       const address = (document.getElementById('address') as HTMLInputElement).value
@@ -61,14 +146,40 @@ if (!user) return Astro.redirect('/login')
         body: JSON.stringify({ name, address }),
       })
 
-      if (res.ok) {
-        const apartment = await res.json()
-        window.location.href = `/dashboard/apartment/${apartment.id}/guide`
-      } else {
+      if (!res.ok) {
         const data = await res.json()
         errorMsg.textContent = data.error || 'Something went wrong'
         errorMsg.classList.remove('hidden')
+        submitBtn.disabled = false
+        submitBtn.textContent = 'Create apartment'
+        return
       }
+
+      const apartment = await res.json()
+
+      if (selectedSourceId) {
+        submitBtn.textContent = 'Copying guide...'
+        const guideRes = await fetch(`/api/guide/${selectedSourceId}`)
+        if (guideRes.ok) {
+          const g = await guideRes.json()
+          await fetch(`/api/guide/${apartment.id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              wifi_name: g.wifi_name,
+              wifi_password: g.wifi_password,
+              checkin_time: g.checkin_time,
+              checkout_time: g.checkout_time,
+              house_rules: g.house_rules,
+              local_tips: g.local_tips,
+              emergency_contacts: g.emergency_contacts,
+              custom_sections: g.custom_sections,
+            }),
+          })
+        }
+      }
+
+      window.location.href = `/dashboard/apartment/${apartment.id}/guide`
     })
   </script>
 </Dashboard>

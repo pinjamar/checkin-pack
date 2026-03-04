@@ -34,10 +34,11 @@ export const POST: APIRoute = async (context) => {
     const { Resend } = await import('resend')
     const resend = new Resend(context.locals.runtime.env.RESEND_API_KEY)
 
-    const registrationUrl = `${new URL('/register/' + booking.pre_arrival_token, 'https://checkinpack.hr').href}`
+    const siteUrl = (context.locals.runtime?.env?.PUBLIC_SITE_URL as string | undefined) || 'https://checkin-pack.pages.dev'
+    const registrationUrl = `${new URL('/register/' + booking.pre_arrival_token, siteUrl).href}`
 
     await resend.emails.send({
-      from: 'CheckinPack <noreply@checkinpack.hr>',
+      from: 'CheckinPack <onboarding@resend.dev>',
       to: booking.guest_email,
       subject: `Pre-arrival registration for ${(booking as any).apartments.name}`,
       html: `
@@ -60,6 +61,7 @@ export const POST: APIRoute = async (context) => {
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 })
   } catch (err) {
-    return new Response(JSON.stringify({ error: 'Failed to send link' }), { status: 500 })
+    const message = err instanceof Error ? err.message : String(err)
+    return new Response(JSON.stringify({ error: message }), { status: 500 })
   }
 }

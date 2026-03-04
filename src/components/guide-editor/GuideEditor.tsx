@@ -33,6 +33,13 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [savedSectionIds, setSavedSectionIds] = useState<Set<string>>(
+    new Set((initialData.custom_sections || []).map((s: any) => s.id))
+  )
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [showCopyModal, setShowCopyModal] = useState(false)
+  const [copyApartments, setCopyApartments] = useState<{ id: string; name: string }[]>([])
+  const [copyLoading, setCopyLoading] = useState(false)
 
   const update = (field: keyof GuideData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }))
@@ -47,6 +54,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
   }
 
   const updateCustomSection = (id: string, field: string, value: string) => {
+    setSavedSectionIds((prev) => { const next = new Set(prev); next.delete(id); return next })
     update(
       'custom_sections',
       data.custom_sections.map((s: any) => (s.id === id ? { ...s, [field]: value } : s))
@@ -54,13 +62,15 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
   }
 
   const removeCustomSection = (id: string) => {
+    setSavedSectionIds((prev) => { const next = new Set(prev); next.delete(id); return next })
     update(
       'custom_sections',
       data.custom_sections.filter((s: any) => s.id !== id)
     )
+    setConfirmDeleteId(null)
   }
 
-  const save = async () => {
+  const save = async (): Promise<boolean> => {
     setSaving(true)
     setError('')
 
@@ -73,14 +83,63 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
 
       if (res.ok) {
         setSaved(true)
+        return true
       } else {
         const result = await res.json()
         setError(result.error || 'Failed to save')
+        return false
       }
     } catch {
       setError('Network error')
+      return false
     } finally {
       setSaving(false)
+    }
+  }
+
+  const openCopyModal = async () => {
+    setCopyLoading(true)
+    setShowCopyModal(true)
+    try {
+      const res = await fetch('/api/apartments')
+      if (res.ok) {
+        const all = await res.json()
+        setCopyApartments(all.filter((a: any) => a.id !== apartmentId))
+      }
+    } finally {
+      setCopyLoading(false)
+    }
+  }
+
+  const copyFromApartment = async (sourceId: string, sourceName: string) => {
+    setCopyLoading(true)
+    try {
+      const res = await fetch(`/api/guide/${sourceId}`)
+      if (res.ok) {
+        const g = await res.json()
+        setData({
+          wifi_name: g.wifi_name || '',
+          wifi_password: g.wifi_password || '',
+          checkin_time: g.checkin_time || '',
+          checkout_time: g.checkout_time || '',
+          house_rules: g.house_rules || '',
+          local_tips: g.local_tips || [],
+          emergency_contacts: g.emergency_contacts || [],
+          custom_sections: g.custom_sections || [],
+        })
+        setSavedSectionIds(new Set())
+        setSaved(false)
+        setShowCopyModal(false)
+      }
+    } finally {
+      setCopyLoading(false)
+    }
+  }
+
+  const saveSectionConfirm = async (id: string) => {
+    const ok = await save()
+    if (ok) {
+      setSavedSectionIds((prev) => new Set(prev).add(id))
     }
   }
 
@@ -98,7 +157,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
               type="text"
               value={data.wifi_name || ''}
               onChange={(e) => update('wifi_name', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a6b4a]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder="e.g. Villa_Sunce_WiFi"
             />
           </div>
@@ -108,7 +167,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
               type="text"
               value={data.wifi_password || ''}
               onChange={(e) => update('wifi_password', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a6b4a]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder="WiFi password"
             />
           </div>
@@ -127,7 +186,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
               type="text"
               value={data.checkin_time || ''}
               onChange={(e) => update('checkin_time', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a6b4a]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder="e.g. 14:00"
             />
           </div>
@@ -137,7 +196,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
               type="text"
               value={data.checkout_time || ''}
               onChange={(e) => update('checkout_time', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a6b4a]"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand"
               placeholder="e.g. 10:00"
             />
           </div>
@@ -153,7 +212,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
           value={data.house_rules || ''}
           onChange={(e) => update('house_rules', e.target.value)}
           rows={6}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#1a6b4a] resize-y"
+          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand resize-y"
           placeholder="e.g. No smoking indoors&#10;Quiet hours: 23:00 - 07:00&#10;Please separate recycling"
         />
       </section>
@@ -181,7 +240,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
           <button
             type="button"
             onClick={addCustomSection}
-            className="text-sm text-[#1a6b4a] font-medium hover:underline"
+            className="text-sm text-brand font-medium hover:underline"
           >
             + Add section
           </button>
@@ -193,7 +252,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
 
         <div className="space-y-3">
           {data.custom_sections.map((section: any) => (
-            <div key={section.id} className="bg-gray-50 rounded-lg p-3 space-y-2">
+            <div key={section.id} className={`rounded-lg p-3 space-y-2 transition-colors duration-500 ${savedSectionIds.has(section.id) ? 'bg-green-50 border border-green-200' : 'bg-gray-50'}`}>
               <div className="flex gap-2">
                 <input
                   type="text"
@@ -204,10 +263,10 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
                 />
                 <button
                   type="button"
-                  onClick={() => removeCustomSection(section.id)}
-                  className="px-2 text-gray-400 hover:text-red-500"
+                  onClick={() => setConfirmDeleteId(section.id)}
+                  className="px-2 text-xs text-gray-400 hover:text-red-500"
                 >
-                  ×
+                  Delete
                 </button>
               </div>
               <textarea
@@ -217,10 +276,79 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
                 rows={3}
                 className="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm resize-y"
               />
+              {!savedSectionIds.has(section.id) && (
+                <div className="flex items-center justify-end pt-1">
+                  <button
+                    type="button"
+                    onClick={() => saveSectionConfirm(section.id)}
+                    disabled={saving}
+                    className="px-3 py-1 bg-brand text-white rounded-lg text-xs font-medium hover:bg-brand-dark disabled:opacity-50 transition-colors"
+                  >
+                    {saving ? 'Saving...' : 'Save'}
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
       </section>
+
+      {/* Copy from apartment modal */}
+      {showCopyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-96 space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-gray-800">Copy guide from...</p>
+              <button type="button" onClick={() => setShowCopyModal(false)} className="text-gray-400 hover:text-gray-600 text-xl leading-none">×</button>
+            </div>
+            <p className="text-sm text-gray-500">All fields (WiFi, rules, tips, sections) will be replaced with the selected apartment's guide. You can still edit before saving.</p>
+            {copyLoading ? (
+              <p className="text-sm text-gray-400 py-4 text-center">Loading...</p>
+            ) : copyApartments.length === 0 ? (
+              <p className="text-sm text-gray-400 py-4 text-center">No other apartments found.</p>
+            ) : (
+              <div className="space-y-2 max-h-64 overflow-y-auto">
+                {copyApartments.map((apt) => (
+                  <button
+                    key={apt.id}
+                    type="button"
+                    onClick={() => copyFromApartment(apt.id, apt.name)}
+                    className="w-full text-left px-4 py-3 rounded-lg border border-gray-200 hover:border-brand hover:bg-green-50 transition-colors text-sm font-medium text-gray-800"
+                  >
+                    {apt.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Delete confirm modal */}
+      {confirmDeleteId && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+          <div className="bg-white rounded-xl shadow-lg p-6 w-80 space-y-4">
+            <p className="font-semibold text-gray-800">Delete this section?</p>
+            <p className="text-sm text-gray-500">This cannot be undone.</p>
+            <div className="flex gap-3 justify-end">
+              <button
+                type="button"
+                onClick={() => setConfirmDeleteId(null)}
+                className="px-4 py-2 text-sm text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => removeCustomSection(confirmDeleteId)}
+                className="px-4 py-2 text-sm text-white bg-red-500 rounded-lg hover:bg-red-600"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Save */}
       <div className="sticky bottom-0 bg-gray-50 -mx-4 px-4 py-4 md:-mx-8 md:px-8 border-t border-gray-200">
@@ -228,7 +356,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
           <button
             onClick={save}
             disabled={saving}
-            className="px-6 py-2.5 bg-[#1a6b4a] text-white rounded-lg font-medium hover:bg-[#145538] disabled:opacity-50 transition-colors text-sm"
+            className="px-6 py-2.5 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark disabled:opacity-50 transition-colors text-sm"
           >
             {saving ? 'Saving...' : 'Save Guide'}
           </button>
