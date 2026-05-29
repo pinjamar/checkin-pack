@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { formatForEvisitor, type GuestData } from '../../lib/evisitor-format'
+import { formatForEvisitor, formatDateHR, type GuestData } from '../../lib/evisitor-format'
 
 interface RegistrationCardProps {
   bookingId: string
@@ -18,13 +18,6 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
   const [registered, setRegistered] = useState(registrationStatus === 'registered')
   const formatted = formatForEvisitor(guest, booking)
 
-  const copyAll = async () => {
-    const text = formatted.map((f) => `${f.field}: ${f.value}`).join('\n')
-    await navigator.clipboard.writeText(text)
-    setCopiedField('all')
-    setTimeout(() => setCopiedField(null), 2000)
-  }
-
   const copyValue = async (field: string, value: string) => {
     await navigator.clipboard.writeText(value)
     setCopiedField(field)
@@ -38,10 +31,10 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
       if (res.ok) {
         setRegistered(true)
       } else {
-        alert('Failed to update status')
+        alert('Greška pri ažuriranju statusa / Failed to update status')
       }
     } catch {
-      alert('Network error')
+      alert('Mrežna greška / Network error')
     } finally {
       setMarking(false)
     }
@@ -49,36 +42,44 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
 
   return (
     <div className={`rounded-xl border p-5 ${registered ? 'border-green-300 bg-green-50' : 'bg-white border-gray-200'}`}>
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="font-semibold text-gray-900">
+      {/* Header */}
+      <div className="mb-3">
+        <h3 className="font-semibold text-gray-900 mb-0.5">
           {registered ? '✅ ' : '📋 '}eVisitor — {booking.guest_name || guest.full_name}
         </h3>
-        <button
-          onClick={copyAll}
-          className="px-3 py-1.5 text-xs font-medium bg-[#1a6b4a] text-white rounded-lg hover:bg-[#145538] transition-colors"
-        >
-          {copiedField === 'all' ? 'Copied!' : 'Copy All'}
-        </button>
+        <p className="text-xs text-gray-500">
+          Dolazak/Arrival: {formatDateHR(booking.arrival_date)} → {formatDateHR(booking.departure_date)}
+        </p>
+        <p className="text-xs mt-0.5">
+          {registered
+            ? <span className="text-green-700">🟢 Prijavljeno / Registered</span>
+            : <span className="text-amber-600">🟡 Čeka prijavu / Pending registration</span>
+          }
+        </p>
       </div>
 
+      {/* Fields */}
       <div className="space-y-2">
         {formatted.map((item) => (
           <div
             key={item.field}
-            className="flex items-start justify-between p-2.5 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors"
-            onClick={() => copyValue(item.field, item.value)}
+            className="flex items-center justify-between gap-3 p-2.5 bg-gray-50 rounded-lg"
           >
             <div className="min-w-0 flex-1">
               <p className="text-xs text-gray-500">{item.field}</p>
-              <p className="text-sm font-medium text-gray-900 mt-0.5">{item.value}</p>
+              <p className="text-sm font-medium text-gray-900 mt-0.5 break-all">{item.value}</p>
             </div>
-            <span className="text-xs text-gray-400 ml-2 shrink-0">
-              {copiedField === item.field ? 'Copied!' : 'Click to copy'}
-            </span>
+            <button
+              onClick={() => copyValue(item.field, item.value)}
+              className="shrink-0 min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600 whitespace-nowrap"
+            >
+              {copiedField === item.field ? '✓ Kopirano' : 'Kopiraj'}
+            </button>
           </div>
         ))}
       </div>
 
+      {/* Actions */}
       <div className="mt-4 flex gap-3">
         <a
           href="https://www.evisitor.hr"
@@ -86,7 +87,7 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
           rel="noopener noreferrer"
           className="flex-1 py-2.5 text-sm font-medium text-center border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
         >
-          Open eVisitor ↗
+          🌐 Otvori eVisitor
         </a>
         {!registered ? (
           <button
@@ -94,17 +95,17 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
             disabled={marking}
             className="flex-1 py-2.5 text-sm font-medium bg-brand text-white rounded-lg hover:bg-brand-dark disabled:opacity-50 transition-colors"
           >
-            {marking ? 'Saving...' : '✅ Mark as Registered'}
+            {marking ? 'Označi...' : '✅ Označi kao prijavljeno'}
           </button>
         ) : (
           <div className="flex-1 py-2.5 text-sm font-medium text-center text-green-700 bg-green-100 rounded-lg">
-            Registered in eVisitor
+            ✅ Prijavljeno
           </div>
         )}
       </div>
 
       <p className="mt-3 text-xs text-gray-400">
-        Copy fields into eVisitor top to bottom. Data auto-deletes 30 days after departure.
+        Kopirajte polja redom od gore prema dolje. / Copy fields top to bottom into eVisitor. Podaci se automatski brišu 30 dana nakon odjave.
       </p>
     </div>
   )

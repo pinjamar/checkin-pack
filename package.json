@@ -6,7 +6,10 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "test:evisitor": "playwright test tests/evisitor --headed"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
@@ -26,5 +29,8 @@
     "stripe": "^20.3.1",
     "tailwindcss": "^4.2.0",
     "typescript": "^5.9.3"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.60.0"
   }
 }
