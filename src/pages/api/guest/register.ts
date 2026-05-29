@@ -23,12 +23,18 @@ export const POST: APIRoute = async (context) => {
     // Find booking by token
     const { data: booking } = await supabaseAdmin
       .from('bookings')
-      .select('id, departure_date, guest_name, apartments!inner(name, slug, owner_id)')
+      .select('id, departure_date, guest_name, registration_status, apartments!inner(name, slug, owner_id)')
       .eq('pre_arrival_token', token)
       .single()
 
     if (!booking) {
       return new Response(JSON.stringify({ error: 'Invalid or expired registration link' }), { status: 404 })
+    }
+
+    const bookingWithStatus = booking as any
+    if (bookingWithStatus.registration_status === 'completed' || bookingWithStatus.registration_status === 'registered') {
+      const apartment = bookingWithStatus.apartments
+      return new Response(JSON.stringify({ ok: true, guide_url: `/m/${apartment.slug}` }), { status: 200 })
     }
 
     const apartment = (booking as any).apartments
@@ -56,7 +62,7 @@ export const POST: APIRoute = async (context) => {
       .update({ registration_status: 'completed' })
       .eq('id', booking.id)
 
-    const guideUrl = `https://checkinpack.hr/m/${apartment.slug}`
+    const guideUrl = `/m/${apartment.slug}`
 
     // Notify owner — silent fail
     try {
@@ -84,7 +90,8 @@ export const POST: APIRoute = async (context) => {
     }
 
     return new Response(JSON.stringify({ ok: true, guide_url: guideUrl }), { status: 201 })
-  } catch {
-    return new Response(JSON.stringify({ error: 'Failed to submit registration' }), { status: 500 })
+  } catch (err: any) {
+    console.error('register.ts error:', err)
+    return new Response(JSON.stringify({ error: 'Failed to submit registration', detail: err?.message }), { status: 500 })
   }
 }

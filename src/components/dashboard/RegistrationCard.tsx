@@ -13,15 +13,24 @@ interface RegistrationCardProps {
 }
 
 export default function RegistrationCard({ bookingId, registrationStatus, guest, booking }: RegistrationCardProps) {
-  const [copiedField, setCopiedField] = useState<string | null>(null)
+  const [copiedFields, setCopiedFields] = useState<Set<string>>(new Set())
+  const [copiedAll, setCopiedAll] = useState(false)
   const [marking, setMarking] = useState(false)
   const [registered, setRegistered] = useState(registrationStatus === 'registered')
   const formatted = formatForEvisitor(guest, booking)
 
   const copyValue = async (field: string, value: string) => {
     await navigator.clipboard.writeText(value)
-    setCopiedField(field)
-    setTimeout(() => setCopiedField(null), 2000)
+    setCopiedFields(prev => new Set(prev).add(field))
+    setTimeout(() => setCopiedFields(prev => { const n = new Set(prev); n.delete(field); return n }), 2000)
+  }
+
+  const copyAll = async () => {
+    const text = formatted.map(f => f.value).join('\n')
+    await navigator.clipboard.writeText(text)
+    setCopiedAll(true)
+    setCopiedFields(new Set(formatted.map(f => f.field)))
+    setTimeout(() => { setCopiedAll(false); setCopiedFields(new Set()) }, 2000)
   }
 
   const markRegistered = async () => {
@@ -63,20 +72,26 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
         {formatted.map((item) => (
           <div
             key={item.field}
-            className="flex items-center justify-between gap-3 p-2.5 bg-gray-50 rounded-lg"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 bg-gray-50 rounded-lg"
           >
-            <div className="min-w-0 flex-1">
+            <div className="min-w-0">
               <p className="text-xs text-gray-500">{item.field}</p>
               <p className="text-sm font-medium text-gray-900 mt-0.5 break-all">{item.value}</p>
             </div>
             <button
               onClick={() => copyValue(item.field, item.value)}
-              className="shrink-0 min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600 whitespace-nowrap"
+              className="w-full sm:w-auto shrink-0 min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600"
             >
-              {copiedField === item.field ? '✓ Kopirano' : 'Kopiraj'}
+              {copiedFields.has(item.field) ? '✓ Kopirano' : 'Kopiraj'}
             </button>
           </div>
         ))}
+        <button
+          onClick={copyAll}
+          className="w-full min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600 mt-1"
+        >
+          {copiedAll ? '✓ Sve kopirano' : '📋 Kopiraj sve'}
+        </button>
       </div>
 
       {/* Actions */}

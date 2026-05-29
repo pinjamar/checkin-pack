@@ -37,6 +37,9 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
     new Set((initialData.custom_sections || []).map((s: any) => s.id))
   )
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null)
+  const [showCopyModal, setShowCopyModal] = useState(false)
+  const [copyApartments, setCopyApartments] = useState<{ id: string; name: string }[]>([])
+  const [copyLoading, setCopyLoading] = useState(false)
 
   const update = (field: keyof GuideData, value: any) => {
     setData((prev) => ({ ...prev, [field]: value }))

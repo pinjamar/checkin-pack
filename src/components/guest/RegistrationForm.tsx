@@ -17,7 +17,7 @@ const COUNTRIES = [
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1)
-const YEARS = (() => { const y = new Date().getFullYear(); return Array.from({ length: y - 1919 }, (_, i) => y - i) })()
+const YEARS = Array.from({ length: 2025 - 1919 }, (_, i) => 2025 - i)
 
 const sel = "w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand bg-white"
 const inp = "w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand"
