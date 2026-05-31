@@ -4,6 +4,10 @@ export interface GuestData {
   document_number: string
   nationality: string
   date_of_birth: string
+  gender?: string
+  country_of_birth?: string
+  country_of_residence?: string
+  city_of_residence?: string
 }
 
 // Maps English country names (as stored by the guest registration form)
@@ -116,20 +120,37 @@ export function formatDateHR(dateStr: string): string {
   return `${d}.${m}.${y}`
 }
 
+export type FieldInputType = 'text' | 'select' | 'autocomplete'
+
 export function formatForEvisitor(
   guest: GuestData,
   booking: { arrival_date: string; departure_date: string }
-) {
-  return [
-    { field: 'Prezime i ime (Surname and name)', value: guest.full_name.toUpperCase() },
-    {
-      field: 'Vrsta isprave (Document type)',
-      value: guest.document_type === 'passport' ? 'Putovnica / Passport' : 'Osobna iskaznica / ID Card',
-    },
-    { field: 'Broj isprave (Document number)', value: guest.document_number },
-    { field: 'Državljanstvo (Nationality)', value: formatNationality(guest.nationality) },
-    { field: 'Datum rođenja (Date of birth)', value: formatDateHR(guest.date_of_birth) },
-    { field: 'Datum dolaska (Arrival date)', value: formatDateHR(booking.arrival_date) },
-    { field: 'Datum odlaska (Departure date)', value: formatDateHR(booking.departure_date) },
+): { field: string; value: string; inputType: FieldInputType }[] {
+  // Split "LASTNAME Firstname" → separate fields matching eVisitor's form order
+  const nameParts = guest.full_name.split(' ')
+  const surname = (nameParts[0] || '').toUpperCase()
+  const firstName = nameParts.slice(1).join(' ') || ''
+
+  const genderDisplay = guest.gender === 'male' ? 'Muški / Male' : guest.gender === 'female' ? 'Ženski / Female' : ''
+
+  const rows: { field: string; value: string; inputType: FieldInputType }[] = [
+    { field: 'Vrsta isprave (Document type)', value: guest.document_type === 'passport' ? 'Putovnica / Passport' : 'Osobna iskaznica / ID Card', inputType: 'select' },
+    { field: 'Broj isprave (Document number)', value: guest.document_number, inputType: 'text' },
+    { field: 'Prezime (Surname)', value: surname, inputType: 'text' },
+    { field: 'Ime (First name)', value: firstName, inputType: 'text' },
   ]
+
+  if (genderDisplay) rows.push({ field: 'Spol (Gender)', value: genderDisplay, inputType: 'select' })
+  if (guest.country_of_residence) rows.push({ field: 'Država prebivališta (Country of residence)', value: formatNationality(guest.country_of_residence), inputType: 'autocomplete' })
+  if (guest.city_of_residence) rows.push({ field: 'Grad prebivališta (City of residence)', value: guest.city_of_residence, inputType: 'text' })
+  if (guest.country_of_birth) rows.push({ field: 'Država rođenja (Country of birth)', value: formatNationality(guest.country_of_birth), inputType: 'autocomplete' })
+
+  rows.push(
+    { field: 'Datum rođenja (Date of birth)', value: formatDateHR(guest.date_of_birth), inputType: 'text' },
+    { field: 'Državljanstvo (Nationality)', value: formatNationality(guest.nationality), inputType: 'autocomplete' },
+    { field: 'Datum dolaska (Arrival date)', value: formatDateHR(booking.arrival_date), inputType: 'text' },
+    { field: 'Datum odlaska (Departure date)', value: formatDateHR(booking.departure_date), inputType: 'text' },
+  )
+
+  return rows
 }

@@ -31,6 +31,10 @@ interface Guest {
   dob_day: string
   dob_month: string
   dob_year: string
+  gender: string
+  country_of_birth: string
+  country_of_residence: string
+  city_of_residence: string
 }
 
 interface Props {
@@ -42,6 +46,7 @@ interface Props {
 const empty = (): Guest => ({
   first_name: '', last_name: '', document_type: 'id_card', document_number: '',
   nationality: '', dob_day: '', dob_month: '', dob_year: '',
+  gender: '', country_of_birth: '', country_of_residence: '', city_of_residence: '',
 })
 
 export default function RegistrationForm({ token, apartmentName, arrivalDate }: Props) {
@@ -63,6 +68,14 @@ export default function RegistrationForm({ token, apartmentName, arrivalDate }: 
         setError('Please fill in date of birth for all guests.')
         return
       }
+      if (!g.gender) {
+        setError('Please select gender for all guests.')
+        return
+      }
+      if (!g.country_of_residence || !g.city_of_residence || !g.country_of_birth) {
+        setError('Please fill in country/city of residence and country of birth for all guests.')
+        return
+      }
     }
 
     setLoading(true)
@@ -73,6 +86,10 @@ export default function RegistrationForm({ token, apartmentName, arrivalDate }: 
       document_number: g.document_number,
       nationality: g.nationality,
       date_of_birth: `${g.dob_year}-${String(g.dob_month).padStart(2, '0')}-${String(g.dob_day).padStart(2, '0')}`,
+      gender: g.gender,
+      country_of_birth: g.country_of_birth,
+      country_of_residence: g.country_of_residence,
+      city_of_residence: g.city_of_residence,
     }))
 
     try {
@@ -153,6 +170,16 @@ export default function RegistrationForm({ token, apartmentName, arrivalDate }: 
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Gender / Spol *</label>
+              <select required value={guest.gender}
+                onChange={e => update(i, 'gender', e.target.value)} className={sel}>
+                <option value="">Select / Odaberite</option>
+                <option value="male">Male / Muški</option>
+                <option value="female">Female / Ženski</option>
+              </select>
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Document type / Vrsta isprave *</label>
               <select required value={guest.document_type}
                 onChange={e => update(i, 'document_type', e.target.value)} className={sel}>
@@ -174,10 +201,36 @@ export default function RegistrationForm({ token, apartmentName, arrivalDate }: 
                 list="countries-list"
                 required
                 value={guest.nationality}
-                onChange={e => update(i, 'nationality', e.target.value)}
+                onChange={e => {
+                  const val = e.target.value
+                  update(i, 'nationality', val)
+                  if (!guest.country_of_birth) update(i, 'country_of_birth', val)
+                  if (!guest.country_of_residence) update(i, 'country_of_residence', val)
+                }}
                 className={inp}
                 placeholder="Type to search..."
               />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Country of birth / Država rođenja *</label>
+              <input type="text" list="countries-list" required value={guest.country_of_birth}
+                onChange={e => update(i, 'country_of_birth', e.target.value)}
+                className={inp} placeholder="Type to search..." />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Country of residence / Država prebivališta *</label>
+              <input type="text" list="countries-list" required value={guest.country_of_residence}
+                onChange={e => update(i, 'country_of_residence', e.target.value)}
+                className={inp} placeholder="Type to search..." />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">City of residence / Grad prebivališta *</label>
+              <input type="text" required value={guest.city_of_residence}
+                onChange={e => update(i, 'city_of_residence', e.target.value)}
+                className={inp} placeholder="e.g. Berlin" />
             </div>
 
             <div>

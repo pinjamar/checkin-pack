@@ -14,9 +14,10 @@ interface RegistrationCardProps {
 
 export default function RegistrationCard({ bookingId, registrationStatus, guest, booking }: RegistrationCardProps) {
   const [copiedFields, setCopiedFields] = useState<Set<string>>(new Set())
-  const [copiedAll, setCopiedAll] = useState(false)
   const [marking, setMarking] = useState(false)
   const [registered, setRegistered] = useState(registrationStatus === 'registered')
+  const [seqIndex, setSeqIndex] = useState<number | null>(null)
+
   const formatted = formatForEvisitor(guest, booking)
 
   const copyValue = async (field: string, value: string) => {
@@ -25,23 +26,27 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
     setTimeout(() => setCopiedFields(prev => { const n = new Set(prev); n.delete(field); return n }), 2000)
   }
 
-  const copyAll = async () => {
-    const text = formatted.map(f => f.value).join('\n')
-    await navigator.clipboard.writeText(text)
-    setCopiedAll(true)
-    setCopiedFields(new Set(formatted.map(f => f.field)))
-    setTimeout(() => { setCopiedAll(false); setCopiedFields(new Set()) }, 2000)
+  const startSequential = async () => {
+    setSeqIndex(0)
+    await navigator.clipboard.writeText(formatted[0].value)
+  }
+
+  const nextField = async () => {
+    const next = (seqIndex ?? 0) + 1
+    if (next >= formatted.length) {
+      setSeqIndex(null)
+    } else {
+      setSeqIndex(next)
+      await navigator.clipboard.writeText(formatted[next].value)
+    }
   }
 
   const markRegistered = async () => {
     setMarking(true)
     try {
       const res = await fetch(`/api/bookings/${bookingId}/mark-registered`, { method: 'POST' })
-      if (res.ok) {
-        setRegistered(true)
-      } else {
-        alert('Greška pri ažuriranju statusa / Failed to update status')
-      }
+      if (res.ok) setRegistered(true)
+      else alert('Greška pri ažuriranju statusa / Failed to update status')
     } catch {
       alert('Mrežna greška / Network error')
     } finally {
@@ -51,6 +56,7 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
 
   return (
     <div className={`rounded-xl border p-5 ${registered ? 'border-green-300 bg-green-50' : 'bg-white border-gray-200'}`}>
+
       {/* Header */}
       <div className="mb-3">
         <h3 className="font-semibold text-gray-900 mb-0.5">
@@ -67,31 +73,65 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
         </p>
       </div>
 
+      {/* Sequential mode banner */}
+      {seqIndex !== null && (() => {
+        const current = formatted[seqIndex]
+        const hint =
+          current.inputType === 'select'
+            ? '⚠️ Padajući izbornik — odaberite ručno'
+            : current.inputType === 'autocomplete'
+            ? '🔍 Upišite u polje za pretraživanje'
+            : '📋 Zalijepite u eVisitor (Ctrl+V / Cmd+V)'
+        return (
+          <div className="bg-brand rounded-lg p-3 mb-3 text-white">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-xs font-medium opacity-75">Polje {seqIndex + 1} od {formatted.length}</span>
+              <button onClick={() => setSeqIndex(null)} className="text-xs opacity-60 hover:opacity-100">✕ Zatvori</button>
+            </div>
+            <p className="text-sm font-semibold">{current.field}</p>
+            <p className="text-xs opacity-75 mt-0.5">{hint}</p>
+            <button
+              onClick={nextField}
+              className="mt-2.5 w-full py-2 bg-white text-brand rounded-lg text-sm font-bold hover:bg-gray-50 transition-colors"
+            >
+              {seqIndex < formatted.length - 1 ? 'Dalje →' : '✓ Gotovo'}
+            </button>
+          </div>
+        )
+      })()}
+
       {/* Fields */}
       <div className="space-y-2">
-        {formatted.map((item) => (
+        {formatted.map((item, idx) => (
           <div
             key={item.field}
-            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 bg-gray-50 rounded-lg"
+            className={`flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 p-2.5 rounded-lg transition-colors ${
+              seqIndex === idx ? 'bg-brand-light border border-brand' : 'bg-gray-50'
+            }`}
           >
             <div className="min-w-0">
               <p className="text-xs text-gray-500">{item.field}</p>
               <p className="text-sm font-medium text-gray-900 mt-0.5 break-all">{item.value}</p>
             </div>
-            <button
-              onClick={() => copyValue(item.field, item.value)}
-              className="w-full sm:w-auto shrink-0 min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600"
-            >
-              {copiedFields.has(item.field) ? '✓ Kopirano' : 'Kopiraj'}
-            </button>
+            {seqIndex === null && (
+              <button
+                onClick={() => copyValue(item.field, item.value)}
+                className="w-full sm:w-auto shrink-0 min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600"
+              >
+                {copiedFields.has(item.field) ? '✓ Kopirano' : 'Kopiraj'}
+              </button>
+            )}
           </div>
         ))}
-        <button
-          onClick={copyAll}
-          className="w-full min-h-11 px-3 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-100 active:bg-gray-200 transition-colors text-gray-600 mt-1"
-        >
-          {copiedAll ? '✓ Sve kopirano' : '📋 Kopiraj sve'}
-        </button>
+
+        {seqIndex === null && (
+          <button
+            onClick={startSequential}
+            className="w-full min-h-11 px-3 text-sm font-semibold bg-brand text-white rounded-lg hover:bg-brand-dark transition-colors mt-1"
+          >
+            ▶ Kopiraj polje po polje
+          </button>
+        )}
       </div>
 
       {/* Actions */}
@@ -118,10 +158,6 @@ export default function RegistrationCard({ bookingId, registrationStatus, guest,
           </div>
         )}
       </div>
-
-      <p className="mt-3 text-xs text-gray-400">
-        Kopirajte polja redom od gore prema dolje. / Copy fields top to bottom into eVisitor. Podaci se automatski brišu 30 dana nakon odjave.
-      </p>
     </div>
   )
 }

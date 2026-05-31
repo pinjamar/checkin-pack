@@ -115,6 +115,10 @@ if (completedBookingIds.length > 0) {
               document_number: reg.document_number_encrypted || '',
               nationality: reg.nationality,
               date_of_birth: reg.date_of_birth,
+              gender: reg.gender || undefined,
+              country_of_birth: reg.country_of_birth || undefined,
+              country_of_residence: reg.country_of_residence || undefined,
+              city_of_residence: reg.city_of_residence || undefined,
             }}
             booking={{
               arrival_date: booking?.arrival_date || '',
