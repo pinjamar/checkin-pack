@@ -107,6 +107,7 @@ if (completedBookingIds.length > 0) {
         return (
           <RegistrationCard
             client:load
+            registrationId={reg.id}
             bookingId={reg.booking_id}
             registrationStatus={booking?.registration_status || 'completed'}
             guest={{

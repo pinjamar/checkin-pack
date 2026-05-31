@@ -140,12 +140,11 @@ export function formatForEvisitor(
     { field: 'Ime (First name)', value: firstName, inputType: 'text' },
   ]
 
-  if (genderDisplay) rows.push({ field: 'Spol (Gender)', value: genderDisplay, inputType: 'select' })
-  if (guest.country_of_residence) rows.push({ field: 'Država prebivališta (Country of residence)', value: formatNationality(guest.country_of_residence), inputType: 'autocomplete' })
-  if (guest.city_of_residence) rows.push({ field: 'Grad prebivališta (City of residence)', value: guest.city_of_residence, inputType: 'text' })
-  if (guest.country_of_birth) rows.push({ field: 'Država rođenja (Country of birth)', value: formatNationality(guest.country_of_birth), inputType: 'autocomplete' })
-
   rows.push(
+    { field: 'Spol (Gender)', value: genderDisplay || '—', inputType: 'select' },
+    { field: 'Država prebivališta (Country of residence)', value: guest.country_of_residence ? formatNationality(guest.country_of_residence) : '—', inputType: 'autocomplete' },
+    { field: 'Grad prebivališta (City of residence)', value: guest.city_of_residence || '—', inputType: 'text' },
+    { field: 'Država rođenja (Country of birth)', value: guest.country_of_birth ? formatNationality(guest.country_of_birth) : '—', inputType: 'autocomplete' },
     { field: 'Datum rođenja (Date of birth)', value: formatDateHR(guest.date_of_birth), inputType: 'text' },
     { field: 'Državljanstvo (Nationality)', value: formatNationality(guest.nationality), inputType: 'autocomplete' },
     { field: 'Datum dolaska (Arrival date)', value: formatDateHR(booking.arrival_date), inputType: 'text' },
