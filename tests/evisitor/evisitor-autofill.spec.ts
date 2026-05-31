@@ -129,7 +129,8 @@ test('autofill eVisitor registration form', async ({ page }) => {
   await page.fill('#userName', EV_USERNAME!)
   await page.fill('#password', EV_PASSWORD!)
   await page.click('#loginPageButton')
-  await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 })
+  console.log('\n⏳ Waiting for login — if TAN is required, enter it in the browser now...')
+  await page.waitForSelector('a:has-text("Turisti")', { timeout: 180_000 })
   await page.screenshot({ path: path.join(OUTPUT_DIR, '01-logged-in.png'), fullPage: true })
   console.log('✅ Logged in')
 
@@ -162,6 +163,10 @@ test('autofill eVisitor registration form', async ({ page }) => {
     const docNumber: string = g.document_number_encrypted || ''
     const docType: string = g.document_type || 'passport'
     const dob: string = g.date_of_birth || ''
+    const gender: string = (g as any).gender || ''
+    const cityOfResidence: string = (g as any).city_of_residence || ''
+    const countryOfResidence: string = (g as any).country_of_residence || nationality
+    const countryOfBirth: string = (g as any).country_of_birth || nationality
 
     console.log(`\nFilling guest ${i + 1}: ${g.full_name}`)
 
@@ -185,14 +190,26 @@ test('autofill eVisitor registration form', async ({ page }) => {
     // Date of birth (DD.MM.YYYY)
     await page.fill(`[id^="DateOfBirth"]`, toHRDate(dob))
 
+    // Gender — radio button (Muški / Ženski)
+    if (gender) {
+      const genderLabel = gender === 'male' ? 'Muški' : 'Ženski'
+      await page.locator(`label:has-text("${genderLabel}")`).first().click()
+      await page.waitForTimeout(300)
+    }
+
+    // Country of residence (from guest data, fallback to nationality)
+    await fillAutocomplete(page, `CountryResidenceID${suffix}`, countryOfResidence)
+
+    // City of residence — selector needs verification with inspect-selectors
+    if (cityOfResidence) {
+      await page.fill(`[id^="PlaceOfResidence"]`, cityOfResidence)
+    }
+
+    // Country of birth (from guest data, fallback to nationality)
+    await fillAutocomplete(page, `CountryOfBirthID${suffix}`, countryOfBirth)
+
     // Citizenship / nationality (autocomplete)
     await fillAutocomplete(page, `CitizenshipCountryID${suffix}`, nationality)
-
-    // Country of residence ≈ nationality country (best guess — not collected)
-    await fillAutocomplete(page, `CountryResidenceID${suffix}`, nationality)
-
-    // Country of birth ≈ nationality country (best guess — not collected)
-    await fillAutocomplete(page, `CountryOfBirthID${suffix}`, nationality)
 
     // Arrival date
     await page.fill(`[id^="StayFrom"]`, toHRDate(booking.arrival_date))

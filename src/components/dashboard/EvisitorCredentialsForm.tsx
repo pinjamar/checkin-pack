@@ -50,7 +50,7 @@ export default function EvisitorCredentialsForm() {
   }
 
   if (loading) {
-    return <div className="text-sm text-gray-400">Loading...</div>
+    return <div className="text-sm text-gray-400">Učitavanje...</div>
   }
 
   return (

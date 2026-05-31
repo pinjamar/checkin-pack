@@ -16,25 +16,25 @@ const { data: owner } = await supabaseAdmin
 const plan = owner?.plan || 'free'
 ---
 
-<Dashboard title="Settings">
-  <h1 class="text-2xl font-bold text-gray-900 mb-6">Settings</h1>
+<Dashboard title="Postavke">
+  <h1 class="text-2xl font-bold text-gray-900 mb-6">Postavke</h1>
 
-  <!-- Account info -->
+  <!-- Korisnički podaci -->
   <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6 max-w-lg">
-    <h2 class="font-semibold text-gray-800 mb-4">Account</h2>
+    <h2 class="font-semibold text-gray-800 mb-4">Korisnički podaci</h2>
     <div class="space-y-3 text-sm">
       <div>
         <span class="text-gray-500">Email:</span>
         <span class="ml-2 text-gray-900">{user.email}</span>
       </div>
       <div>
-        <span class="text-gray-500">Name:</span>
+        <span class="text-gray-500">Ime:</span>
         <span class="ml-2 text-gray-900">{owner?.full_name || '—'}</span>
       </div>
     </div>
   </div>
 
-  <!-- eVisitor credentials -->
+  <!-- eVisitor prijava -->
   <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6 max-w-lg">
     <h2 class="font-semibold text-gray-800 mb-1">eVisitor prijava</h2>
     <p class="text-sm text-gray-500 mb-4">
@@ -43,39 +43,39 @@ const plan = owner?.plan || 'free'
     <EvisitorCredentialsForm client:load />
   </div>
 
-  <!-- Plan info -->
+  <!-- Plan -->
   <div class="bg-white rounded-xl border border-gray-200 p-5 max-w-lg">
     <h2 class="font-semibold text-gray-800 mb-4">Plan</h2>
 
     {plan === 'free' ? (
       <div>
         <div class="flex items-center gap-2 mb-3">
-          <span class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Free</span>
-          <span class="text-sm text-gray-500">1 apartment, 3 bookings/month</span>
+          <span class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Besplatni</span>
+          <span class="text-sm text-gray-500">1 apartman, 3 bookinga/mjesec</span>
         </div>
 
         <div class="bg-brand-light rounded-lg p-4 mt-4">
-          <h3 class="font-semibold text-brand mb-2">Upgrade to Pro</h3>
+          <h3 class="font-semibold text-brand mb-2">Nadogradite na Pro</h3>
           <ul class="text-sm text-gray-600 space-y-1 mb-4">
-            <li>Unlimited apartments</li>
-            <li>Unlimited bookings</li>
-            <li>Priority support</li>
+            <li>Neograničen broj apartmana</li>
+            <li>Neograničen broj bookinga</li>
+            <li>Prioritetna podrška</li>
           </ul>
           <div class="flex gap-3">
             <button class="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors">
-              €80/year — save €40
+              €80/godišnje — uštedite €40
             </button>
             <button class="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
-              €10/month
+              €10/mjesečno
             </button>
           </div>
-          <p class="text-xs text-gray-500 mt-2">Pay once before the season, covered until October.</p>
+          <p class="text-xs text-gray-500 mt-2">Platite jednom prije sezone, pokriveni ste do listopada.</p>
         </div>
       </div>
     ) : (
       <div class="flex items-center gap-2">
         <span class="px-2.5 py-1 text-xs font-medium bg-brand-light text-brand rounded-full">Pro</span>
-        <span class="text-sm text-gray-500">Unlimited apartments and bookings</span>
+        <span class="text-sm text-gray-500">Neograničen broj apartmana i bookinga</span>
       </div>
     )}
   </div>

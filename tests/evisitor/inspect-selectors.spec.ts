@@ -113,7 +113,8 @@ test('login and inspect registration form selectors', async ({ page }) => {
   await page.screenshot({ path: path.join(OUTPUT_DIR, '02-before-login.png') })
 
   await page.click('#loginPageButton')
-  await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 })
+  console.log('\n⏳ Waiting for login — if TAN is required, enter it in the browser now...')
+  await page.waitForSelector('a:has-text("Turisti")', { timeout: 180_000 })
 
   await page.screenshot({ path: path.join(OUTPUT_DIR, '03-after-login.png'), fullPage: true })
 

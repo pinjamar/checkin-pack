@@ -185,24 +185,26 @@ export default function RegistrationCard({ registrationId, bookingId, registrati
             </div>
           </div>
 
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Država prebivališta</label>
-            <input className={inp} list={`cl-${registrationId}`} value={editData.country_of_residence} onChange={set('country_of_residence')} placeholder="Npr. Germany" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Država prebivališta</label>
+              <input className={inp} list={`cl-${registrationId}`} value={editData.country_of_residence} onChange={set('country_of_residence')} placeholder="Npr. Germany" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Grad prebivališta</label>
+              <input className={inp} value={editData.city_of_residence} onChange={set('city_of_residence')} placeholder="Npr. Berlin" />
+            </div>
           </div>
 
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Grad prebivališta</label>
-            <input className={inp} value={editData.city_of_residence} onChange={set('city_of_residence')} placeholder="Npr. Berlin" />
-          </div>
-
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Država rođenja</label>
-            <input className={inp} list={`cl-${registrationId}`} value={editData.country_of_birth} onChange={set('country_of_birth')} placeholder="Npr. Germany" />
-          </div>
-
-          <div>
-            <label className="block text-xs text-gray-500 mb-1">Državljanstvo</label>
-            <input className={inp} list={`cl-${registrationId}`} value={editData.nationality} onChange={set('nationality')} placeholder="Npr. Germany" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Država rođenja</label>
+              <input className={inp} list={`cl-${registrationId}`} value={editData.country_of_birth} onChange={set('country_of_birth')} placeholder="Npr. Germany" />
+            </div>
+            <div>
+              <label className="block text-xs text-gray-500 mb-1">Državljanstvo</label>
+              <input className={inp} list={`cl-${registrationId}`} value={editData.nationality} onChange={set('nationality')} placeholder="Npr. Germany" />
+            </div>
           </div>
 
           <div className="flex gap-2 pt-1">
