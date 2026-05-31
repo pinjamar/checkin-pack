@@ -82,44 +82,60 @@ test('inspect eVisitor login page selectors', async ({ page }) => {
 })
 
 test('login and inspect registration form selectors', async ({ page }) => {
-  const username = process.env.EVISITOR_USERNAME
-  const password = process.env.EVISITOR_PASSWORD
+  let username = process.env.EVISITOR_USERNAME
+  let password = process.env.EVISITOR_PASSWORD
+
+  // Fallback: read from .dev.vars if env vars not set
+  if (!username || !password) {
+    try {
+      const devVars = fs.readFileSync(path.join(process.cwd(), '.dev.vars'), 'utf-8')
+      for (const line of devVars.split('\n')) {
+        const eq = line.indexOf('=')
+        if (eq < 1) continue
+        const key = line.slice(0, eq).trim()
+        const val = line.slice(eq + 1).trim()
+        if (key === 'EVISITOR_USERNAME') username = val
+        if (key === 'EVISITOR_PASSWORD') password = val
+      }
+    } catch {}
+  }
 
   test.skip(!username || !password,
-    'Set EVISITOR_USERNAME and EVISITOR_PASSWORD env vars to run this test')
+    'Add EVISITOR_USERNAME and EVISITOR_PASSWORD to .dev.vars to run this test')
 
   await page.goto('https://www.evisitor.hr', { waitUntil: 'domcontentloaded', timeout: 20_000 })
 
   // --- Step 1: Log in ---
   // These selectors are placeholders — the first test above will tell you the real ones
-  await page.fill('input[name="username"], #username, input[type="text"]', username!)
-  await page.fill('input[name="password"], #password, input[type="password"]', password!)
+  await page.fill('#userName', username!)
+  await page.fill('#password', password!)
 
   await page.screenshot({ path: path.join(OUTPUT_DIR, '02-before-login.png') })
 
-  await page.click('button[type="submit"], input[type="submit"]')
+  await page.click('#loginPageButton')
   await page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 15_000 })
 
   await page.screenshot({ path: path.join(OUTPUT_DIR, '03-after-login.png'), fullPage: true })
 
-  // --- Step 2: Navigate to new registration form ---
-  // The link text or href for "new registration" — inspect screenshot 03 to find it
-  // then update the selector below
-  const newRegLink = page.locator(
-    'a:has-text("Nova prijava"), a:has-text("Prijava gosta"), [href*="nova"], [href*="new"]'
-  ).first()
+  // --- Step 2: Expand "Turisti" menu and navigate to new registration ---
+  // Click the "Turisti" sidebar item to expand its submenu
+  await page.click('a:has-text("Turisti")')
+  await page.waitForTimeout(1000)
+  await page.screenshot({ path: path.join(OUTPUT_DIR, '04-turisti-menu.png'), fullPage: true })
+
+  // Click "Prijava turista" from the expanded Turisti submenu
+  const newRegLink = page.locator('a:has-text("Prijava turista")').first()
 
   const linkCount = await newRegLink.count()
   if (linkCount === 0) {
-    await page.screenshot({ path: path.join(OUTPUT_DIR, '04-no-nav-link-found.png'), fullPage: true })
-    console.log('Could not find registration nav link. Check screenshot 03 and 04.')
-    // Don't fail — let the user inspect the screenshots
+    await page.screenshot({ path: path.join(OUTPUT_DIR, '05-no-nav-link-found.png'), fullPage: true })
+    console.log('Could not find registration nav link. Check screenshots 03 and 04.')
     return
   }
 
   await newRegLink.click()
   await page.waitForLoadState('domcontentloaded')
-  await page.screenshot({ path: path.join(OUTPUT_DIR, '04-registration-form.png'), fullPage: true })
+  await page.screenshot({ path: path.join(OUTPUT_DIR, '05-registration-form.png'), fullPage: true })
 
   // --- Step 3: Collect registration form selectors ---
   const formInputs = await page.evaluate(() => {

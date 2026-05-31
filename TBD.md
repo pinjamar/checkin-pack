@@ -1,39 +1,51 @@
 # To Be Done
 
-## Next session — eVisitor Playwright autofill
+## Before using eVisitor autofill — one-time DB migration
 
-### Step 1: Run selector inspector (you do this)
-Set your eVisitor credentials and run:
-```powershell
-$env:EVISITOR_USERNAME="your-username"
-$env:EVISITOR_PASSWORD="your-password"
-npm run test:evisitor
+Run this in Supabase dashboard → SQL Editor:
+```sql
+ALTER TABLE owners
+ADD COLUMN IF NOT EXISTS evisitor_username text,
+ADD COLUMN IF NOT EXISTS evisitor_password text;
 ```
-This logs into evisitor.hr, takes screenshots, and dumps all form selectors to:
-- `tests/evisitor/output/login-page-selectors.json`
-- `tests/evisitor/output/registration-form-selectors.json`
 
-Share `registration-form-selectors.json` and screenshots with Claude.
-
-### Step 2: Build autofill script (Claude builds this)
-Once selectors are known, Claude builds `tests/evisitor/evisitor-autofill.spec.ts`:
-- Reads guest data from a booking (passed as env vars or JSON)
-- Logs into evisitor.hr
-- Fills all registration form fields automatically
-- Screenshots each step for verification
-
-### Step 3: Owner credentials settings page (Claude builds this)
-A page at `/dashboard/settings` (already exists but empty) where the owner stores their
-eVisitor username and password securely — encrypted in Supabase, retrieved at autofill runtime.
+Then go to **Settings → eVisitor prijava** in the dashboard and enter your credentials once.
+After that, the autofill script picks them up automatically from Supabase.
 
 ---
 
-## Already done (this session)
+## Running the autofill
+
+1. Add the booking ID to `.dev.vars`:
+   ```
+   AUTOFILL_BOOKING_ID=your-booking-uuid
+   ```
+2. Run:
+   ```powershell
+   npm run test:autofill
+   ```
+3. A real browser opens, logs into evisitor.hr, and fills the form.
+4. **Do not close the browser** — review the filled form and click "Prijavi" manually.
+
+Fields that need manual attention after autofill:
+- **Spol (gender)** — not collected by guest form, must be set manually
+- **Grad boravišta / rođenja** — not collected, left blank
+- **Vrijeme dolaska/odlaska** — left blank
+
+---
+
+## Already done
+
 - eVisitor data card with per-field copy buttons + "Kopiraj sve" (copy all)
 - Mobile layout fix on RegistrationCard
 - Cron emails: pre-arrival link + checkout reminder (tested, email confirmed)
 - Health check: pings evisitor.hr, alerts ADMIN_ALERT_EMAIL if down (tested, email confirmed)
-- Playwright setup: config, test files, eVisitor selector inspector ready to run
+- Playwright selector inspector (`npm run test:evisitor`) — confirmed working
+- `tests/evisitor/evisitor-autofill.spec.ts` — fills eVisitor form from Supabase booking data
+- `npm run test:autofill` script in package.json
+- Settings page (`/dashboard/settings`) — eVisitor credentials section with save form
+- `src/pages/api/owner/evisitor-credentials.ts` — GET/PUT API for credentials
+- `src/components/dashboard/EvisitorCredentialsForm.tsx` — React form component
 - wrangler.toml: fixed entry point to `dist/_worker.js/index.js`
 - scripts/test-cron.mjs: test cron functions locally without wrangler
 
