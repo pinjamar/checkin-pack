@@ -16,6 +16,28 @@ const { data: owner } = await supabaseAdmin
 const plan = owner?.plan || 'free'
 ---
 
+<script>
+  async function checkout(interval: 'annual' | '3month') {
+    const res = await fetch('/api/stripe/create-checkout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ interval }),
+    })
+    const data = await res.json()
+    if (data.url) window.location.href = data.url
+  }
+
+  async function openPortal() {
+    const res = await fetch('/api/stripe/customer-portal', { method: 'POST' })
+    const data = await res.json()
+    if (data.url) window.location.href = data.url
+  }
+
+  document.getElementById('upgrade-annual')?.addEventListener('click', () => checkout('annual'))
+  document.getElementById('upgrade-3month')?.addEventListener('click', () => checkout('3month'))
+  document.getElementById('manage-subscription')?.addEventListener('click', openPortal)
+</script>
+
 <Dashboard title="Postavke">
   <h1 class="text-2xl font-bold text-gray-900 mb-6">Postavke</h1>
 
@@ -43,39 +65,48 @@ const plan = owner?.plan || 'free'
     <EvisitorCredentialsForm client:load />
   </div>
 
-  <!-- Plan -->
+  <!-- Plan & Billing -->
   <div class="bg-white rounded-xl border border-gray-200 p-5 max-w-lg">
-    <h2 class="font-semibold text-gray-800 mb-4">Plan</h2>
+    <h2 class="font-semibold text-gray-800 mb-4">Plan i naplata</h2>
 
     {plan === 'free' ? (
       <div>
-        <div class="flex items-center gap-2 mb-3">
+        <div class="flex items-center gap-2 mb-4">
           <span class="px-2.5 py-1 text-xs font-medium bg-gray-100 text-gray-600 rounded-full">Besplatni</span>
-          <span class="text-sm text-gray-500">1 apartman, 3 bookinga/mjesec</span>
+          <span class="text-sm text-gray-500">1 apartman, 3 rezervacije/mj</span>
         </div>
-
-        <div class="bg-brand-light rounded-lg p-4 mt-4">
+        <div class="bg-brand-light rounded-lg p-4">
           <h3 class="font-semibold text-brand mb-2">Nadogradite na Pro</h3>
           <ul class="text-sm text-gray-600 space-y-1 mb-4">
-            <li>Neograničen broj apartmana</li>
-            <li>Neograničen broj bookinga</li>
-            <li>Prioritetna podrška</li>
+            <li>✓ Neograničen broj apartmana i rezervacija</li>
+            <li>✓ eVisitor automatsko ispunjavanje</li>
+            <li>✓ Automatski emailovi gostima</li>
           </ul>
-          <div class="flex gap-3">
-            <button class="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors">
-              €80/godišnje — uštedite €40
+          <div class="flex gap-3 flex-wrap">
+            <button id="upgrade-annual" class="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors">
+              €20/godišnje — plati prije sezone
             </button>
-            <button class="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
-              €10/mjesečno
+            <button id="upgrade-3month" class="px-4 py-2 bg-white text-gray-700 text-sm font-medium rounded-lg border border-gray-300 hover:bg-gray-50 transition-colors">
+              ili €5 / 3 mj
             </button>
           </div>
           <p class="text-xs text-gray-500 mt-2">Platite jednom prije sezone, pokriveni ste do listopada.</p>
         </div>
       </div>
     ) : (
-      <div class="flex items-center gap-2">
-        <span class="px-2.5 py-1 text-xs font-medium bg-brand-light text-brand rounded-full">Pro</span>
-        <span class="text-sm text-gray-500">Neograničen broj apartmana i bookinga</span>
+      <div>
+        <div class="flex items-center gap-2 mb-3">
+          <span class="px-2.5 py-1 text-xs font-medium bg-brand-light text-brand rounded-full">Pro</span>
+          <span class="text-sm text-gray-500">Neograničen broj apartmana i rezervacija</span>
+        </div>
+        {owner?.plan_expires_at && (
+          <p class="text-sm text-gray-500 mb-4">
+            Obnavlja se: {new Date(owner.plan_expires_at).toLocaleDateString('hr-HR')}
+          </p>
+        )}
+        <button id="manage-subscription" class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+          Upravljaj pretplatom
+        </button>
       </div>
     )}
   </div>

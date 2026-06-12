@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import { getSupabaseAdmin } from '../../../lib/supabase-server'
+import { checkPlanLimits } from '../../../lib/plan-limits'
 
 async function getUser(cookies: any, serviceKey: string) {
   const supabaseAdmin = getSupabaseAdmin(serviceKey)
@@ -56,6 +57,11 @@ export const POST: APIRoute = async (context) => {
     const user = await getUser(cookies, context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
     if (!user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
+    }
+
+    const limits = await checkPlanLimits(user.id, context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
+    if (!limits.can_add_booking) {
+      return new Response(JSON.stringify({ error: 'PLAN_LIMIT', message: 'Free plan allows 3 bookings/month. Upgrade to Pro for unlimited.' }), { status: 403 })
     }
 
     const body = await request.json()

@@ -1,0 +1,118 @@
+---
+import Dashboard from '../../../../layouts/Dashboard.astro'
+import { getSupabaseAdmin } from '../../../../lib/supabase-server'
+
+const supabase = getSupabaseAdmin(Astro.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
+const user = Astro.locals.user
+if (!user) return Astro.redirect('/login')
+
+const { id } = Astro.params
+
+const { data: apartment } = await supabase
+  .from('apartments')
+  .select('*')
+  .eq('id', id)
+  .eq('owner_id', user.id)
+  .single()
+
+if (!apartment) return Astro.redirect('/dashboard')
+
+const { data: icalFeed } = await supabase
+  .from('ical_feeds')
+  .select('*')
+  .eq('apartment_id', id)
+  .maybeSingle()
+---
+
+<Dashboard title={`Postavke — ${apartment.name}`}>
+  <div class="flex items-center gap-3 mb-6">
+    <a href={`/dashboard/apartment/${id}/bookings`} class="text-sm text-gray-500 hover:text-gray-700">← Nazad</a>
+    <h1 class="text-2xl font-bold text-gray-900">Postavke — {apartment.name}</h1>
+  </div>
+
+  <!-- iCal Sync -->
+  <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6 max-w-lg">
+    <h2 class="font-semibold text-gray-800 mb-1">Sinkronizacija s Booking.com / Airbnb</h2>
+    <p class="text-sm text-gray-500 mb-4">
+      Zalijepite iCal URL iz Booking.com ili Airbnba — rezervacije će se automatski sinkronizirati svako jutro u 08:00.
+      <br /><br />
+      <strong>Airbnb:</strong> Oglas → Dostupnost → Izvoz kalendara → kopirajte iCal URL<br />
+      <strong>Booking.com:</strong> Nekretnina → Kalendar → Izvoz → iCal URL
+    </p>
+
+    <form id="ical-form" class="space-y-3">
+      <input
+        type="url"
+        id="ical-url"
+        name="feed_url"
+        value={icalFeed?.feed_url || ''}
+        placeholder="https://www.airbnb.com/calendar/ical/..."
+        class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand/30"
+      />
+      <div class="flex gap-2">
+        <button
+          type="submit"
+          class="px-4 py-2 bg-brand text-white text-sm font-medium rounded-lg hover:bg-brand-dark transition-colors"
+        >
+          Spremi
+        </button>
+        {icalFeed && (
+          <button
+            type="button"
+            id="sync-now"
+            class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Sinkroniziraj sada
+          </button>
+        )}
+      </div>
+      {icalFeed?.last_synced_at && (
+        <p class="text-xs text-gray-400">
+          Zadnja sinkronizacija: {new Date(icalFeed.last_synced_at).toLocaleString('hr-HR')}
+        </p>
+      )}
+      {icalFeed?.sync_error && (
+        <p class="text-xs text-red-500">Greška: {icalFeed.sync_error}</p>
+      )}
+      <p id="ical-status" class="text-xs text-green-600 hidden"></p>
+    </form>
+  </div>
+</Dashboard>
+
+<script define:vars={{ apartmentId: id }}>
+  const form = document.getElementById('ical-form')
+  const syncBtn = document.getElementById('sync-now')
+  const statusEl = document.getElementById('ical-status')
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const url = (document.getElementById('ical-url') as HTMLInputElement).value.trim()
+    if (!url) return
+
+    const res = await fetch(`/api/apartments/${apartmentId}/ical`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ feed_url: url }),
+    })
+
+    if (res.ok) {
+      statusEl!.textContent = 'Spremljeno!'
+      statusEl!.classList.remove('hidden')
+      setTimeout(() => statusEl!.classList.add('hidden'), 2000)
+    }
+  })
+
+  syncBtn?.addEventListener('click', async () => {
+    syncBtn.textContent = 'Sinkroniziram...'
+    const res = await fetch('/api/ical/sync', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apartment_id: apartmentId }),
+    })
+    const data = await res.json()
+    syncBtn.textContent = res.ok
+      ? `Gotovo — ${data.created} novih, ${data.updated} ažuriranih`
+      : 'Greška'
+    setTimeout(() => (syncBtn.textContent = 'Sinkroniziraj sada'), 3000)
+  })
+</script>

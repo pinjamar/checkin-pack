@@ -1,4 +1,4 @@
-import { sendScheduledPreArrivalEmails, sendCheckoutReminders, checkEvisitorHealth } from './lib/cron'
+import { sendScheduledPreArrivalEmails, sendCheckoutReminders, checkEvisitorHealth, syncIcalFeeds, cleanupExpiredRegistrations } from './lib/cron'
 
 // This file is the Cloudflare Worker entrypoint.
 // The @astrojs/cloudflare adapter merges Astro's fetch handler with these exports.
@@ -9,6 +9,8 @@ interface Env {
   RESEND_API_KEY: string
   PUBLIC_SUPABASE_URL: string
   ADMIN_ALERT_EMAIL: string
+  STRIPE_SECRET_KEY: string
+  STRIPE_WEBHOOK_SECRET: string
 }
 
 export default {
@@ -29,6 +31,10 @@ export default {
           checkEvisitorHealth(env),
         ])
       )
+    } else if (event.cron === '0 6 * * *') {
+      ctx.waitUntil(syncIcalFeeds(env))
+    } else if (event.cron === '0 2 * * 0') {
+      ctx.waitUntil(cleanupExpiredRegistrations(env))
     }
   },
 }

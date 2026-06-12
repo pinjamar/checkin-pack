@@ -10,11 +10,12 @@ assets = { directory = "dist", binding = "ASSETS" }
 # 0 8 * * *  → 08:00 UTC = 10:00 HR: send pre-arrival emails + health check
 # 0 18 * * * → 18:00 UTC = 20:00 HR: send checkout reminders + health check
 [triggers]
-crons = ["0 8 * * *", "0 18 * * *"]
+crons = ["0 8 * * *", "0 18 * * *", "0 6 * * *", "0 2 * * 0"]
 
 # Non-secret runtime variables
 [vars]
 PUBLIC_SUPABASE_URL = "https://yrsxyfrwsaujwtnzamuf.supabase.co"
+PUBLIC_SITE_URL = "https://checkinpack.pages.dev"
 
 # Secrets (set via: wrangler secret put <NAME>)
 # - RESEND_API_KEY

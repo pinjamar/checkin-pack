@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import { getSupabaseAdmin } from '../../../lib/supabase-server'
+import { checkPlanLimits } from '../../../lib/plan-limits'
 
 export const GET: APIRoute = async (context) => {
   const { cookies } = context
@@ -44,7 +45,12 @@ export const POST: APIRoute = async (context) => {
     }
 
 
-const body = await request.json()
+    const limits = await checkPlanLimits(user.id, context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY)
+    if (!limits.can_add_apartment) {
+      return new Response(JSON.stringify({ error: 'PLAN_LIMIT', message: 'Free plan allows 1 apartment. Upgrade to Pro for unlimited.' }), { status: 403 })
+    }
+
+    const body = await request.json()
     const { name, address } = body
 
     if (!name) {
