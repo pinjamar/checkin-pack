@@ -148,6 +148,10 @@ if (!user) return Astro.redirect('/login')
 
       if (!res.ok) {
         const data = await res.json()
+        if (data.error === 'PLAN_LIMIT') {
+          window.location.href = '/dashboard?limit=apartment'
+          return
+        }
         errorMsg.textContent = data.error || 'Something went wrong'
         errorMsg.classList.remove('hidden')
         submitBtn.disabled = false

@@ -57,6 +57,7 @@ if (apartments && apartments.length > 0) {
 }
 
 const showUpgraded = Astro.url.searchParams.get('upgraded') === 'true'
+const showLimit = Astro.url.searchParams.get('limit') === 'apartment'
 const todayFormatted = new Date().toLocaleDateString('hr-HR', { weekday: 'long', day: 'numeric', month: 'long' })
 ---
 
@@ -65,6 +66,12 @@ const todayFormatted = new Date().toLocaleDateString('hr-HR', { weekday: 'long',
   {showUpgraded && (
     <div class="mb-6 px-4 py-3 bg-green-50 border border-green-200 text-green-800 text-sm rounded-lg font-medium">
       Dobrodošli u Pro! / Welcome to Pro! — sve je otključano.
+    </div>
+  )}
+
+  {showLimit && (
+    <div class="mb-6 px-4 py-3 bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg font-medium">
+      Besplatni plan dopušta 1 apartman. Nadogradite na Pro za neograničeno.
     </div>
   )}
 

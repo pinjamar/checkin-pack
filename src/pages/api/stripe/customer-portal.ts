@@ -6,7 +6,7 @@ export const POST: APIRoute = async (context) => {
   const { cookies } = context
   const serviceKey = context.locals.runtime.env.SUPABASE_SERVICE_ROLE_KEY
   const stripeKey = context.locals.runtime.env.STRIPE_SECRET_KEY
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://checkinpack.pages.dev'
+  const siteUrl = import.meta.env.PUBLIC_SITE_URL || new URL(context.request.url).origin
 
   try {
     const accessToken = cookies.get('sb-access-token')?.value

@@ -8,7 +8,7 @@ export const POST: APIRoute = async (context) => {
   const stripeKey = context.locals.runtime.env.STRIPE_SECRET_KEY
   const stripePriceMonthly = context.locals.runtime.env.STRIPE_PRICE_PRO_MONTHLY
   const stripePriceAnnual = context.locals.runtime.env.STRIPE_PRICE_PRO_ANNUAL
-  const siteUrl = import.meta.env.PUBLIC_SITE_URL || 'https://checkinpack.pages.dev'
+  const siteUrl = import.meta.env.PUBLIC_SITE_URL || new URL(request.url).origin
 
   try {
     const accessToken = cookies.get('sb-access-token')?.value
@@ -40,7 +40,7 @@ export const POST: APIRoute = async (context) => {
         metadata: { supabase_user_id: user.id },
       })
       customerId = customer.id
-      await supabase.from('owners').update({ stripe_customer_id: customerId }).eq('id', user.id)
+      await supabase.from('owners').upsert({ id: user.id, stripe_customer_id: customerId }, { onConflict: 'id' })
     }
 
     const session = await stripe.checkout.sessions.create({

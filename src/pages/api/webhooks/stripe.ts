@@ -68,7 +68,7 @@ export const POST: APIRoute = async (context) => {
 
 async function syncSubscription(stripe: Stripe, supabase: ReturnType<typeof getSupabaseAdmin>, subscriptionId: string) {
   const sub = await stripe.subscriptions.retrieve(subscriptionId, {
-    expand: ['items.data.price'],
+    expand: ['items.data.price', 'latest_invoice'],
   }) as any
 
   const customerId = sub.customer as string
@@ -77,7 +77,7 @@ async function syncSubscription(stripe: Stripe, supabase: ReturnType<typeof getS
   const intervalCount: number = price.recurring?.interval_count ?? 1
   const planInterval = interval === 'year' ? 'year' : intervalCount === 3 ? '3month' : 'month'
   const isActive = sub.status === 'active' || sub.status === 'trialing'
-  const periodEnd = sub.current_period_end ?? sub.billing?.current_period?.end ?? 0
+  const periodEnd = sub.current_period_end ?? sub.billing?.current_period?.end ?? sub.latest_invoice?.period_end ?? 0
 
   await supabase
     .from('owners')
@@ -90,5 +90,3 @@ async function syncSubscription(stripe: Stripe, supabase: ReturnType<typeof getS
     .eq('stripe_customer_id', customerId)
 }
 
-// Need raw body — tell Astro not to pre-parse
-export const config = { bodyParser: false }
