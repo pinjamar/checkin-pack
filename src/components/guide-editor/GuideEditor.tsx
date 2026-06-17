@@ -2,6 +2,19 @@ import { useState } from 'react'
 import LocalTipsEditor from './LocalTipsEditor'
 import ContactsEditor from './ContactsEditor'
 
+async function generateSection(apartmentId: string, section: 'house_rules' | 'local_tips') {
+  const res = await fetch(`/api/guide/${apartmentId}/generate`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ section }),
+  })
+  if (!res.ok) {
+    const d = await res.json()
+    throw new Error(d.error || 'Generation failed')
+  }
+  return res.json()
+}
+
 interface GuideData {
   wifi_name: string | null
   wifi_password: string | null
@@ -33,6 +46,8 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [error, setError] = useState('')
+  const [generating, setGenerating] = useState<'house_rules' | 'local_tips' | null>(null)
+  const [genError, setGenError] = useState('')
   const [savedSectionIds, setSavedSectionIds] = useState<Set<string>>(
     new Set((initialData.custom_sections || []).map((s: any) => s.id))
   )
@@ -136,6 +151,20 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
     }
   }
 
+  const generate = async (section: 'house_rules' | 'local_tips') => {
+    setGenerating(section)
+    setGenError('')
+    try {
+      const data = await generateSection(apartmentId, section)
+      if (section === 'house_rules') update('house_rules', data.content)
+      if (section === 'local_tips') update('local_tips', data.tips)
+    } catch (e: any) {
+      setGenError(e.message)
+    } finally {
+      setGenerating(null)
+    }
+  }
+
   const saveSectionConfirm = async (id: string) => {
     const ok = await save()
     if (ok) {
@@ -205,9 +234,19 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
 
       {/* House Rules */}
       <section className="bg-white rounded-xl border border-gray-200 p-5">
-        <h2 className="font-semibold text-gray-800 mb-4 flex items-center gap-2">
-          <span>📋</span> House Rules
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-semibold text-gray-800 flex items-center gap-2">
+            <span>📋</span> House Rules
+          </h2>
+          <button
+            type="button"
+            onClick={() => generate('house_rules')}
+            disabled={generating === 'house_rules'}
+            className="text-xs px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 disabled:opacity-50 transition-colors"
+          >
+            {generating === 'house_rules' ? 'Generating...' : '✨ Generate with AI'}
+          </button>
+        </div>
         <textarea
           value={data.house_rules || ''}
           onChange={(e) => update('house_rules', e.target.value)}
@@ -219,6 +258,17 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
 
       {/* Local Tips */}
       <section className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span />
+          <button
+            type="button"
+            onClick={() => generate('local_tips')}
+            disabled={generating === 'local_tips'}
+            className="text-xs px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 disabled:opacity-50 transition-colors"
+          >
+            {generating === 'local_tips' ? 'Generating...' : '✨ Generate with AI'}
+          </button>
+        </div>
         <LocalTipsEditor
           tips={data.local_tips}
           onChange={(tips) => update('local_tips', tips)}
@@ -362,6 +412,7 @@ export default function GuideEditor({ apartmentId, initialData }: GuideEditorPro
           </button>
           {saved && <span className="text-sm text-green-600">Saved!</span>}
           {error && <span className="text-sm text-red-600">{error}</span>}
+          {genError && <span className="text-sm text-red-600">AI: {genError}</span>}
         </div>
       </div>
     </div>

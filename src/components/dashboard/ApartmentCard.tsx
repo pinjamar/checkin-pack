@@ -102,6 +102,11 @@ export default function ApartmentCard({
             title="QR Code">
             QR
           </a>
+          <a href={`/dashboard/apartment/${id}/settings`}
+            className="px-3 py-2 text-sm font-medium bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+            title="Postavke">
+            ⚙️
+          </a>
         </div>
       </div>
     </div>

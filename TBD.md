@@ -48,44 +48,15 @@ Then go to **Settings → eVisitor prijava** and enter credentials. The local sc
 
 ---
 
-## Week 3 — Steps to complete manually
+## Week 3 — COMPLETE ✅
 
-1. **Run migration in Supabase Studio** — SQL Editor → paste and run `supabase/migrations/003_subscriptions.sql`
-
-2. **Create Stripe products** — dashboard.stripe.com → Products → "CheckinPack Pro"
-   - Price 1: €5.00, recurring, every 3 months → copy price ID
-   - Price 2: €20.00, recurring, yearly → copy price ID
-
-3. **Fill in `.env`**
-   ```
-   STRIPE_SECRET_KEY=sk_test_...
-   STRIPE_WEBHOOK_SECRET=whsec_...
-   STRIPE_PRICE_PRO_MONTHLY=price_...
-   STRIPE_PRICE_PRO_ANNUAL=price_...
-   ```
-
-4. **Test webhooks locally** — `stripe listen --forward-to localhost:4321/api/webhooks/stripe`
-   Copy the signing secret it prints → paste as `STRIPE_WEBHOOK_SECRET`
-
-5. **Test the full upgrade flow**
-   - `npm run dev`
-   - Create free account, hit apartment limit, click upgrade
-   - Test card: `4242 4242 4242 4242`, any future date, any CVC
-   - Check Supabase → owners table → `plan` should flip to `pro`
-   - Settings → "Upravljaj pretplatom" → Stripe portal opens
-   - Cancel there → `plan` flips back to `free`
-
-6. **Register production webhook in Stripe dashboard**
-   - Stripe → Developers → Webhooks → Add endpoint
-   - URL: `https://checkinpack.pages.dev/api/webhooks/stripe`
-   - Events: `checkout.session.completed`, `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
-   - Copy the signing secret
-
-7. **Add env vars to Cloudflare Pages**
-   - Pages dashboard → project → Settings → Environment variables
-   - Add: `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (production), `STRIPE_PRICE_PRO_MONTHLY`, `STRIPE_PRICE_PRO_ANNUAL`
-
-8. **Deploy** — push to GitHub → Cloudflare auto-deploys
+All manual steps done:
+- Migration 003_subscriptions.sql ran (was already applied)
+- Stripe products created, price IDs in .dev.vars
+- All Stripe + Supabase keys in .dev.vars
+- Production webhook registered: `https://checkinpack.pages.dev/api/webhooks/stripe`
+- Env vars added to Cloudflare Pages
+- Deployed to production
 
 ---
 

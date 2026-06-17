@@ -30,6 +30,16 @@ const { data: icalFeed } = await supabase
     <h1 class="text-2xl font-bold text-gray-900">Postavke — {apartment.name}</h1>
   </div>
 
+  <!-- Danger zone -->
+  <div class="bg-white rounded-xl border border-red-200 p-5 mb-6 max-w-lg">
+    <h2 class="font-semibold text-red-700 mb-1">Opasna zona</h2>
+    <p class="text-sm text-gray-500 mb-4">Brisanje apartmana trajno uklanja sve rezervacije i podatke o gostima.</p>
+    <button id="delete-apartment" class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors">
+      Obriši apartman
+    </button>
+    <p id="delete-error" class="text-xs text-red-500 mt-2 hidden"></p>
+  </div>
+
   <!-- iCal Sync -->
   <div class="bg-white rounded-xl border border-gray-200 p-5 mb-6 max-w-lg">
     <h2 class="font-semibold text-gray-800 mb-1">Sinkronizacija s Booking.com / Airbnb</h2>
@@ -99,6 +109,18 @@ const { data: icalFeed } = await supabase
       statusEl!.textContent = 'Spremljeno!'
       statusEl!.classList.remove('hidden')
       setTimeout(() => statusEl!.classList.add('hidden'), 2000)
+    }
+  })
+
+  document.getElementById('delete-apartment')?.addEventListener('click', async () => {
+    if (!confirm('Obrisati apartman? Ova radnja je trajna.')) return
+    const res = await fetch(`/api/apartments/${apartmentId}`, { method: 'DELETE' })
+    if (res.ok) {
+      window.location.href = '/dashboard'
+    } else {
+      const el = document.getElementById('delete-error')
+      el.textContent = 'Greška pri brisanju.'
+      el.classList.remove('hidden')
     }
   })
 
