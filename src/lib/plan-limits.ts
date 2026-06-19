@@ -50,3 +50,13 @@ export async function checkPlanLimits(ownerId: string, serviceKey: string): Prom
     bookings_this_month,
   }
 }
+
+export async function requireProPlan(ownerId: string, serviceKey: string): Promise<boolean> {
+  const supabase = getSupabaseAdmin(serviceKey)
+  const { data } = await supabase
+    .from('owners')
+    .select('plan')
+    .eq('id', ownerId)
+    .single()
+  return data?.plan === 'pro'
+}

@@ -2,12 +2,48 @@ import { createClient } from '@supabase/supabase-js'
 import { Resend } from 'resend'
 // @ts-ignore
 import ICAL from 'ical.js'
+import { generateContent } from './gemini'
 
 interface CronEnv {
   SUPABASE_SERVICE_ROLE_KEY: string
   RESEND_API_KEY: string
   PUBLIC_SUPABASE_URL: string
   ADMIN_ALERT_EMAIL: string
+  GEMINI_API_KEY?: string
+}
+
+function getSeason(dateStr: string): 'peak' | 'shoulder' | 'off' {
+  const month = new Date(dateStr).getUTCMonth() + 1 // 1-12
+  if (month >= 6 && month <= 8) return 'peak'
+  if (month === 5 || month === 9 || month === 10) return 'shoulder'
+  return 'off'
+}
+
+async function getReviewNudge(booking: any, env: CronEnv): Promise<string> {
+  if (!env.GEMINI_API_KEY) return ''
+  const isPro = (booking.apartments as any)?.owners?.plan === 'pro'
+  if (!isPro) return ''
+
+  const nights = booking.arrival_date && booking.departure_date
+    ? Math.round((new Date(booking.departure_date).getTime() - new Date(booking.arrival_date).getTime()) / 86400000)
+    : null
+
+  const prompt = `Write ONE short, warm, natural sentence (max 25 words) asking a guest to leave a review, for the end of a checkout reminder email.
+
+Context: Guest ${booking.guest_name || ''} stayed ${nights ?? 'a few'} nights during ${getSeason(booking.departure_date)} season.
+
+Write in BOTH Croatian and English, separated by " / ".
+Do not sound salesy or desperate. Make it feel like a genuine, casual request from a host who cares.
+Do not mention specific platform names (Booking.com, Airbnb) — just say "review" generically.
+
+Output only the sentence, nothing else.`
+
+  try {
+    const nudge = await generateContent(env.GEMINI_API_KEY, prompt)
+    return nudge.trim()
+  } catch {
+    return ''
+  }
 }
 
 export async function sendScheduledPreArrivalEmails(env: CronEnv) {
@@ -78,7 +114,7 @@ export async function sendCheckoutReminders(env: CronEnv) {
 
   const { data: bookings, error } = await supabase
     .from('bookings')
-    .select('*, apartments!inner(name, slug, guide_content(checkout_time))')
+    .select('*, apartments!inner(name, slug, owner_id, guide_content(checkout_time), owners(plan))')
     .eq('departure_date', tomorrowDate)
     .eq('checkout_reminder_sent', false)
     .not('guest_email', 'is', null)
@@ -100,6 +136,7 @@ export async function sendCheckoutReminders(env: CronEnv) {
       const apartment = (booking as any).apartments
       const checkoutTime = apartment.guide_content?.checkout_time || '11:00'
       const guideUrl = `https://checkinpack.hr/m/${apartment.slug}`
+      const nudge = await getReviewNudge(booking, env)
 
       await resend.emails.send({
         from: 'CheckinPack <noreply@checkinpack.hr>',
@@ -109,6 +146,7 @@ export async function sendCheckoutReminders(env: CronEnv) {
           <h2>${apartment.name}</h2>
           <p><strong>HR:</strong> Dragi gosti, podsjećamo vas da je odjava sutra u <strong>${checkoutTime}</strong>. Hvala što ste boravili kod nas!</p>
           <p><strong>EN:</strong> Dear guests, this is a reminder that checkout is tomorrow at <strong>${checkoutTime}</strong>. Thank you for staying with us!</p>
+          ${nudge ? `<p style="color:#555;font-style:italic;">${nudge}</p>` : ''}
           <p style="margin-top:20px;">
             <a href="${guideUrl}" style="display:inline-block;padding:12px 24px;background-color:#1a6b4a;color:white;text-decoration:none;border-radius:8px;font-weight:500;">View welcome guide</a>
           </p>

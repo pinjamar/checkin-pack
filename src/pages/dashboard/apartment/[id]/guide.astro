@@ -35,7 +35,16 @@ const guideData = guide || {
   local_tips: [],
   emergency_contacts: [],
   custom_sections: [],
+  ai_welcome_message: null,
+  ai_welcome_tone: 'warm',
 }
+
+const { data: owner } = await supabaseAdmin
+  .from('owners')
+  .select('plan')
+  .eq('id', user.id)
+  .single()
+const isPro = owner?.plan === 'pro'
 ---
 
 <Dashboard title={`Edit Guide — ${apartment.name}`}>
@@ -49,5 +58,5 @@ const guideData = guide || {
     </div>
   </div>
 
-  <GuideEditor client:load apartmentId={id!} initialData={guideData} />
+  <GuideEditor client:load apartmentId={id!} apartmentName={apartment.name} apartmentAddress={apartment.address} initialData={guideData} isPro={isPro} />
 </Dashboard>

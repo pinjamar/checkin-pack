@@ -36,6 +36,7 @@ interface GuideData {
     local_tips: LocalTip[]
     emergency_contacts: EmergencyContact[]
     custom_sections: CustomSection[]
+    ai_welcome_message: string | null
   }
 }
 
@@ -131,7 +132,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
             alt={apartment.name}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+          <div className="absolute inset-0 bg-linear-to-t from-black/50 to-transparent" />
           <div className="absolute bottom-0 left-0 right-0 p-5">
             <h1 className="text-2xl font-bold text-white">{apartment.name}</h1>
             {apartment.address && (
@@ -140,7 +141,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
           </div>
         </div>
       ) : (
-        <div className="bg-[#1a6b4a] p-6 pt-10 pb-8">
+        <div className="bg-brand p-6 pt-10 pb-8">
           <h1 className="text-2xl font-bold text-white">{apartment.name}</h1>
           {apartment.address && (
             <p className="text-white/80 text-sm mt-1">{apartment.address}</p>
@@ -149,17 +150,25 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
       )}
 
       <div className="p-5 space-y-4">
-        {/* Welcome message */}
-        <p className="text-gray-600 text-sm leading-relaxed">
-          Welcome! Here's everything you need for a comfortable stay. Tap any section below for details.
-        </p>
+        {/* AI Welcome Message — shown at top if set, replaces generic fallback */}
+        {guide.ai_welcome_message ? (
+          <div className="bg-amber-50 border border-amber-100 rounded-xl p-5">
+            <div className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+              {guide.ai_welcome_message}
+            </div>
+          </div>
+        ) : (
+          <p className="text-gray-600 text-sm leading-relaxed">
+            Welcome! Here's everything you need for a comfortable stay. Tap any section below for details.
+          </p>
+        )}
 
         {/* WiFi — most important, always visible */}
         {(guide.wifi_name || guide.wifi_password) && (
-          <div className="bg-[#e8f5ee] rounded-xl p-5">
+          <div className="bg-brand-light rounded-xl p-5">
             <div className="flex items-center gap-3 mb-3">
               <span className="text-2xl">📶</span>
-              <h2 className="text-lg font-semibold text-[#1a6b4a]">WiFi</h2>
+              <h2 className="text-lg font-semibold text-brand">WiFi</h2>
             </div>
             {guide.wifi_name && (
               <div className="mb-2">
@@ -176,7 +185,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
                   </p>
                   <button
                     onClick={copyPassword}
-                    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-[#1a6b4a] text-white hover:bg-[#145538] transition-colors"
+                    className="px-3 py-1.5 text-xs font-medium rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors"
                   >
                     {copied ? 'Copied!' : 'Copy'}
                   </button>
@@ -229,7 +238,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
                         <p className="font-medium text-gray-800 text-sm">{tip.name}</p>
                         <p className="text-gray-500 text-xs mt-0.5">{tip.description}</p>
                         {tip.address && (
-                          <p className="text-[#1a6b4a] text-xs mt-1">{tip.address}</p>
+                          <p className="text-brand text-xs mt-1">{tip.address}</p>
                         )}
                       </div>
                     ))}
@@ -264,7 +273,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
                     <p className="font-medium text-gray-800 text-sm">{contact.name}</p>
                     <p className="text-gray-500 text-xs">{contact.label}</p>
                   </div>
-                  <div className="flex items-center gap-2 text-[#1a6b4a]">
+                  <div className="flex items-center gap-2 text-brand">
                     <span className="text-sm font-medium">{contact.phone}</span>
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path
@@ -296,7 +305,7 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
         <div className="pt-8 pb-6 text-center">
           <p className="text-xs text-gray-400">
             Powered by{' '}
-            <a href="https://checkinpack.hr" className="text-[#1a6b4a] font-medium">
+            <a href="https://checkinpack.hr" className="text-brand font-medium">
               CheckinPack.hr
             </a>
           </p>

@@ -11,6 +11,8 @@ interface Env {
   ADMIN_ALERT_EMAIL: string
   STRIPE_SECRET_KEY: string
   STRIPE_WEBHOOK_SECRET: string
+  GEMINI_API_KEY?: string
+  WORKER_SECRET?: string
 }
 
 export default {

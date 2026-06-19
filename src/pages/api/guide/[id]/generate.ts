@@ -17,7 +17,7 @@ export const POST: APIRoute = async (context) => {
   const user = await getUser(cookies, env.SUPABASE_SERVICE_ROLE_KEY)
   if (!user) return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 })
 
-  const apiKey = env.GEMINI_API_KEY
+  const apiKey = env.GEMINI_API_KEY as string | undefined
   if (!apiKey) return new Response(JSON.stringify({ error: 'GEMINI_API_KEY not configured' }), { status: 500 })
 
   const supabase = getSupabaseAdmin(env.SUPABASE_SERVICE_ROLE_KEY)

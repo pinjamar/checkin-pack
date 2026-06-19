@@ -1,10 +1,21 @@
 import { useState } from 'react'
 
-interface Props {
-  reason?: string
+type AIFeature = 'ai_house_rules' | 'ai_welcome' | 'ai_review_nudge' | 'general'
+
+const FEATURE_COPY: Record<AIFeature, { hr: string; en: string }> = {
+  ai_house_rules:   { hr: 'AI formatiranje kućnog reda',  en: 'AI house rules formatting' },
+  ai_welcome:       { hr: 'AI generator dobrodošlice',    en: 'AI welcome message generator' },
+  ai_review_nudge:  { hr: 'AI podsjetnik za recenziju',   en: 'AI review nudge' },
+  general:          { hr: 'AI značajke',                  en: 'AI features' },
 }
 
-export default function UpgradePrompt({ reason }: Props) {
+interface Props {
+  reason?: string
+  feature?: AIFeature
+}
+
+export default function UpgradePrompt({ reason, feature }: Props) {
+  const featureCopy = feature ? FEATURE_COPY[feature] : null
   const [loading, setLoading] = useState<'annual' | '3month' | null>(null)
 
   async function checkout(interval: 'annual' | '3month') {
@@ -24,8 +35,21 @@ export default function UpgradePrompt({ reason }: Props) {
 
   return (
     <div className="bg-brand-light border border-brand/20 rounded-xl p-5">
-      <h3 className="font-semibold text-brand mb-1">Nadogradite na Pro / Upgrade to Pro</h3>
-      {reason && <p className="text-sm text-gray-600 mb-3">{reason}</p>}
+      {featureCopy ? (
+        <>
+          <p className="text-sm font-semibold text-gray-800 mb-1">
+            🔒 {featureCopy.hr} / {featureCopy.en} je Pro značajka
+          </p>
+          <p className="text-sm text-gray-600 mb-3">
+            Vaši gosti misle da imate osobnog asistenta. / Your guests will think you have a full-time hospitality manager.
+          </p>
+        </>
+      ) : (
+        <>
+          <h3 className="font-semibold text-brand mb-1">Nadogradite na Pro / Upgrade to Pro</h3>
+          {reason && <p className="text-sm text-gray-600 mb-3">{reason}</p>}
+        </>
+      )}
       <ul className="text-sm text-gray-600 space-y-1 mb-4">
         <li>✓ Neograničeni apartmani / Unlimited apartments</li>
         <li>✓ Neograničene rezervacije / Unlimited bookings</li>

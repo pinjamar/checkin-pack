@@ -78,6 +78,8 @@ export const PUT: APIRoute = async (context) => {
         local_tips: body.local_tips,
         emergency_contacts: body.emergency_contacts,
         custom_sections: body.custom_sections,
+        ai_welcome_message: body.ai_welcome_message ?? null,
+        ai_welcome_tone: body.ai_welcome_tone ?? 'warm',
         updated_at: new Date().toISOString(),
       })
       .eq('apartment_id', params.id)

@@ -48,6 +48,32 @@ Then go to **Settings → eVisitor prijava** and enter credentials. The local sc
 
 ---
 
+## Week 4 — Manual steps needed
+
+### Supabase — run migration
+In Supabase dashboard → SQL Editor, run the contents of `supabase/migrations/004_ai_welcome.sql`:
+```sql
+alter table guide_content
+  add column if not exists ai_welcome_message text,
+  add column if not exists ai_welcome_tone text default 'warm';
+```
+
+### Cloudflare Pages — add env vars
+Dashboard → Settings → Environment Variables → Production:
+- `GEMINI_API_KEY` — get a free key at https://aistudio.google.com/app/apikey
+- `WORKER_SECRET` — generate any random string (used to auth the review-nudge endpoint)
+
+### Also add to `.dev.vars` for local testing
+```
+GEMINI_API_KEY=your_key_here
+WORKER_SECRET=some_random_secret
+```
+
+### Delete BUILD-GUIDE-WEEK3.md
+No longer needed — Week 3 is deployed and the file is not referenced anywhere.
+
+---
+
 ## Week 3 — COMPLETE ✅
 
 All manual steps done:

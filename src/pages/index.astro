@@ -3,6 +3,7 @@ import Base from '../layouts/Base.astro'
 ---
 
 <Base title="Digital Welcome Guides for Croatian Apartments">
+  <!-- Hero -->
   <div class="min-h-screen flex flex-col items-center justify-center px-4">
     <div class="text-center max-w-lg">
       <h1 class="text-4xl md:text-5xl font-bold text-brand mb-4">CheckinPack.hr</h1>
@@ -27,6 +28,50 @@ import Base from '../layouts/Base.astro'
         </a>
       </div>
       <p class="mt-6 text-sm text-gray-400">Coming soon — launching for the 2026 season</p>
+    </div>
+  </div>
+
+  <!-- AI Features Section -->
+  <div class="bg-gray-50 border-t border-gray-200 py-16 px-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+          AI piše umjesto vas / AI writes for you
+        </h2>
+        <p class="text-gray-500">
+          Dostupno na Pro planu / Available on Pro plan —
+          <a href="/pricing" class="text-brand font-medium hover:underline">€20/godina</a>
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+        <!-- Card 1 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="text-2xl mb-3">✨</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Pametni kućni red / Smart house rules</h3>
+          <p class="text-sm text-gray-500">
+            Napišite pravila kako god znate, AI ih pretvara u jasan, dvojezični vodič.
+          </p>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="text-2xl mb-3">💬</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Personalizirana dobrodošlica / Personalized welcome</h3>
+          <p class="text-sm text-gray-500">
+            AI piše topli pozdrav prilagođen vašem apartmanu, na hrvatskom i engleskom.
+          </p>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="bg-white rounded-xl border border-gray-200 p-5">
+          <div class="text-2xl mb-3">⭐</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Pametan podsjetnik za recenziju / Smart review nudge</h3>
+          <p class="text-sm text-gray-500">
+            Prirodan, nenametljiv poziv gostima da ostave recenziju nakon odjave.
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 </Base>
