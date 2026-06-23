@@ -2,76 +2,298 @@
 import Base from '../layouts/Base.astro'
 ---
 
-<Base title="Digital Welcome Guides for Croatian Apartments">
-  <!-- Hero -->
-  <div class="min-h-screen flex flex-col items-center justify-center px-4">
-    <div class="text-center max-w-lg">
-      <h1 class="text-4xl md:text-5xl font-bold text-brand mb-4">CheckinPack.hr</h1>
-      <p class="text-lg text-gray-600 mb-2">
-        Digital welcome guides for Croatian apartment owners.
-      </p>
-      <p class="text-gray-500 mb-8">
-        Replace the laminated A4 sheet. Give your guests a beautiful mobile guide with WiFi, house rules, local tips, and checkout info.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3 justify-center">
-        <a
-          href="/signup"
-          class="px-6 py-3 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark transition-colors"
-        >
-          Get started free
-        </a>
-        <a
-          href="/login"
-          class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-        >
-          Log in
-        </a>
-      </div>
-      <p class="mt-6 text-sm text-gray-400">Coming soon — launching for the 2026 season</p>
-    </div>
-  </div>
+<Base
+  title="Digitalni check-in asistent za iznajmljivače"
+  description="Zamijenite laminiranu A4 i kaos s eVisitor prijavama. Gosti dobivaju digitalni vodič, vi dobivate prijavu spremnu za eVisitor u 2 minute."
+>
 
-  <!-- AI Features Section -->
-  <div class="bg-gray-50 border-t border-gray-200 py-16 px-4">
-    <div class="max-w-3xl mx-auto">
+  <!-- HERO -->
+  <section class="bg-cream pt-16 pb-20 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col lg:flex-row items-center gap-12">
+
+        <!-- Text -->
+        <div class="flex-1 text-center lg:text-left">
+          <div class="inline-flex items-center gap-2 bg-brand-light text-brand text-xs font-medium px-3 py-1.5 rounded-full mb-6">
+            🇭🇷 Za iznajmljivače apartmana u Hrvatskoj
+          </div>
+          <h1 class="text-4xl md:text-5xl font-bold text-gray-900 leading-tight mb-4">
+            Vaš digitalni<br/>check-in asistent
+          </h1>
+          <p class="text-gray-500 text-sm font-medium mb-3 uppercase tracking-wide">Your digital check-in assistant</p>
+          <p class="text-lg text-gray-600 mb-8 max-w-lg mx-auto lg:mx-0">
+            Zamijenite laminiranu A4 i kaos s eVisitor prijavama. Gosti dobivaju digitalni vodič,
+            vi dobivate prijavu spremnu za eVisitor u 2 minute, AI piše umjesto vas.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start">
+            <a
+              href="/signup"
+              class="px-6 py-3 bg-brand text-white rounded-xl font-semibold hover:bg-brand-dark transition-colors text-center"
+            >
+              Počnite besplatno
+            </a>
+            <a
+              href="#kako-radi"
+              class="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl font-medium hover:bg-gray-50 transition-colors text-center"
+            >
+              Kako radi? ↓
+            </a>
+          </div>
+          <p class="mt-4 text-sm text-gray-400">Bez kreditne kartice · Postavljanje u 10 minuta</p>
+        </div>
+
+        <!-- Phone mockup -->
+        <div class="shrink-0">
+          <div class="relative mx-auto w-55">
+            <div class="bg-gray-900 rounded-[2.5rem] p-3 shadow-2xl">
+              <div class="bg-white rounded-4xl overflow-hidden h-105 flex flex-col">
+                <!-- Status bar -->
+                <div class="bg-brand px-4 pt-3 pb-4">
+                  <div class="flex justify-between text-white/70 text-xs mb-3">
+                    <span>9:41</span><span>●●●</span>
+                  </div>
+                  <p class="text-white/80 text-xs">Dobrodošli u</p>
+                  <p class="text-white font-bold text-base">Apartman Sunce 🌊</p>
+                </div>
+                <!-- Content -->
+                <div class="flex-1 overflow-hidden p-3 space-y-2 bg-gray-50">
+                  <div class="bg-white rounded-xl p-3 shadow-sm">
+                    <p class="text-xs font-semibold text-gray-700 mb-1">📶 WiFi</p>
+                    <p class="text-xs text-gray-500">Sunce_Apartman</p>
+                    <p class="text-xs text-gray-400">••••••••••</p>
+                  </div>
+                  <div class="bg-white rounded-xl p-3 shadow-sm">
+                    <p class="text-xs font-semibold text-gray-700 mb-1">🕐 Check-in / out</p>
+                    <p class="text-xs text-gray-500">Dolazak od 14:00</p>
+                    <p class="text-xs text-gray-500">Odlazak do 10:00</p>
+                  </div>
+                  <div class="bg-white rounded-xl p-3 shadow-sm">
+                    <p class="text-xs font-semibold text-gray-700 mb-1">📋 Kućni red</p>
+                    <p class="text-xs text-gray-400 line-clamp-2">Molimo ne pušiti u apartmanu. Parkiranje...</p>
+                  </div>
+                  <div class="bg-brand text-white rounded-xl p-3 text-center shadow-sm">
+                    <p class="text-xs font-medium">📝 Ispunite obrazac</p>
+                    <p class="text-xs opacity-75">za eVisitor prijavu</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Notch -->
+            <div class="absolute top-3 left-1/2 -translate-x-1/2 w-16 h-1.5 bg-gray-800 rounded-full"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section id="kako-radi" class="bg-brand-light pt-6 pb-12 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-5">
+        <h2 class="text-xl font-bold text-gray-900 mb-1">Kako radi?</h2>
+        <p class="text-gray-500 text-sm">How it works</p>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+        <!-- Connector line on desktop -->
+        <div class="hidden md:block absolute top-8 left-1/4 right-1/4 h-0.5 bg-brand-light"></div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center text-2xl mx-auto mb-4 relative z-10">
+            🏠
+          </div>
+          <div class="text-xs font-bold text-brand uppercase tracking-wide mb-2">Korak 1</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Postavite vodič jednom</h3>
+          <p class="text-sm text-gray-500">Unesite WiFi, kućni red, lokalne savjete. Traje 10 minuta.</p>
+          <p class="text-xs text-gray-400 mt-1">Set up your guide once</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center text-2xl mx-auto mb-4 relative z-10">
+            📲
+          </div>
+          <div class="text-xs font-bold text-brand uppercase tracking-wide mb-2">Korak 2</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Gost ispuni obrazac prije dolaska</h3>
+          <p class="text-sm text-gray-500">Pošaljete link, gost ispuni podatke putovnice — sve na mobitelu.</p>
+          <p class="text-xs text-gray-400 mt-1">Guest fills form before arrival</p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 rounded-2xl bg-brand text-white flex items-center justify-center text-2xl mx-auto mb-4 relative z-10">
+            ✅
+          </div>
+          <div class="text-xs font-bold text-brand uppercase tracking-wide mb-2">Korak 3</div>
+          <h3 class="font-semibold text-gray-900 mb-2">Vi kopirate u eVisitor u 2 minute</h3>
+          <p class="text-sm text-gray-500">Podaci su već formatirani za eVisitor — kopirajte polje po polje.</p>
+          <p class="text-xs text-gray-400 mt-1">You copy to eVisitor in 2 minutes</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEATURES GRID -->
+  <section class="bg-white py-16 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Sve što vam treba za check-in</h2>
+        <p class="text-gray-500 text-sm">Everything you need for check-in</p>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <div class="text-2xl mb-3">📱</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Digitalni vodič za goste</h3>
+          <p class="text-sm text-gray-500">QR kod, WiFi, kućni red, lokalni savjeti — sve na jednom linku.</p>
+          <p class="text-xs text-gray-400 mt-2">Digital guest guide</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <div class="text-2xl mb-3">📋</div>
+          <h3 class="font-semibold text-gray-900 mb-1">eVisitor podaci za kopiranje</h3>
+          <p class="text-sm text-gray-500">Gost ispuni obrazac, vi dobivate podatke formatirane za eVisitor — kopirajte u 2 minute.</p>
+          <p class="text-xs text-gray-400 mt-2">eVisitor data ready to copy</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <div class="text-2xl mb-3">✉️</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Automatski emailovi</h3>
+          <p class="text-sm text-gray-500">Pre-arrival link 3 dana prije dolaska, podsjetnik za odjavu — šalje se samo.</p>
+          <p class="text-xs text-gray-400 mt-2">Automated emails</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <div class="text-2xl mb-3">📅</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Sinkronizacija kalendara</h3>
+          <p class="text-sm text-gray-500">Povežite Booking.com i Airbnb — rezervacije se automatski uvoze.</p>
+          <p class="text-xs text-gray-400 mt-2">Sync with Booking.com & Airbnb</p>
+        </div>
+
+        <div class="bg-gray-50 rounded-2xl p-6 border border-gray-100">
+          <div class="text-2xl mb-3">📊</div>
+          <h3 class="font-semibold text-gray-900 mb-1">Dashboard s pregledom</h3>
+          <p class="text-sm text-gray-500">Tko dolazi danas, tko odlazi, koje prijave čekaju — sve na jednom mjestu.</p>
+          <p class="text-xs text-gray-400 mt-2">Bookings overview dashboard</p>
+        </div>
+
+        <div class="bg-brand-light rounded-2xl p-6 border border-brand/20">
+          <div class="text-2xl mb-3">✨</div>
+          <h3 class="font-semibold text-gray-900 mb-1">AI piše umjesto vas <span class="text-xs font-medium text-brand bg-brand-light border border-brand/30 px-2 py-0.5 rounded-full ml-1">Pro</span></h3>
+          <p class="text-sm text-gray-500">Dobrodošlica, kućni red, podsjetnik za recenziju — sve na hrvatskom i engleskom.</p>
+          <p class="text-xs text-gray-400 mt-2">AI writes welcome & house rules</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- AI SECTION -->
+  <section class="bg-gray-900 py-16 px-4">
+    <div class="max-w-5xl mx-auto">
       <div class="text-center mb-10">
-        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-          AI piše umjesto vas / AI writes for you
+        <div class="inline-flex items-center gap-2 bg-white/10 text-white/80 text-xs font-medium px-3 py-1.5 rounded-full mb-4">
+          ✨ Samo za Pro korisnike
+        </div>
+        <h2 class="text-2xl md:text-3xl font-bold text-white mb-2">
+          AI piše umjesto vas
         </h2>
-        <p class="text-gray-500">
-          Dostupno na Pro planu / Available on Pro plan —
-          <a href="/pricing" class="text-brand font-medium hover:underline">€20/godina</a>
-        </p>
+        <p class="text-white/60 text-sm">AI writes for you — available on Pro</p>
       </div>
 
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <!-- Card 1 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-2xl mb-3">✨</div>
-          <h3 class="font-semibold text-gray-900 mb-1">Pametni kućni red / Smart house rules</h3>
-          <p class="text-sm text-gray-500">
-            Napišite pravila kako god znate, AI ih pretvara u jasan, dvojezični vodič.
-          </p>
+          <h3 class="font-semibold text-white mb-2">Pametni kućni red</h3>
+          <p class="text-sm text-white/60">Napišite pravila kako god znate, AI ih pretvara u jasan, dvojezični vodič.</p>
+          <p class="text-xs text-white/30 mt-2">Smart house rules formatter</p>
         </div>
-
-        <!-- Card 2 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-2xl mb-3">💬</div>
-          <h3 class="font-semibold text-gray-900 mb-1">Personalizirana dobrodošlica / Personalized welcome</h3>
-          <p class="text-sm text-gray-500">
-            AI piše topli pozdrav prilagođen vašem apartmanu, na hrvatskom i engleskom.
-          </p>
+          <h3 class="font-semibold text-white mb-2">Personalizirana dobrodošlica</h3>
+          <p class="text-sm text-white/60">AI piše topli pozdrav prilagođen vašem apartmanu, na hrvatskom i engleskom.</p>
+          <p class="text-xs text-white/30 mt-2">Personalized welcome message</p>
         </div>
-
-        <!-- Card 3 -->
-        <div class="bg-white rounded-xl border border-gray-200 p-5">
+        <div class="bg-white/5 border border-white/10 rounded-2xl p-6">
           <div class="text-2xl mb-3">⭐</div>
-          <h3 class="font-semibold text-gray-900 mb-1">Pametan podsjetnik za recenziju / Smart review nudge</h3>
-          <p class="text-sm text-gray-500">
-            Prirodan, nenametljiv poziv gostima da ostave recenziju nakon odjave.
-          </p>
+          <h3 class="font-semibold text-white mb-2">Pametan poziv na recenziju</h3>
+          <p class="text-sm text-white/60">Prirodan, nenametljiv poziv gostima da ostave recenziju — šalje se automatski.</p>
+          <p class="text-xs text-white/30 mt-2">Smart review nudge</p>
         </div>
       </div>
     </div>
-  </div>
+  </section>
+
+  <!-- PRICING PREVIEW -->
+  <section class="bg-cream py-16 px-4">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-10">
+        <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Jednostavne cijene</h2>
+        <p class="text-gray-500 text-sm">Simple pricing</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-8">
+
+        <!-- Free -->
+        <div class="bg-white rounded-2xl border border-gray-200 p-7">
+          <h3 class="font-bold text-gray-900 text-lg mb-1">Besplatno</h3>
+          <p class="text-sm text-gray-400 mb-4">Free — za početak</p>
+          <div class="text-3xl font-bold text-gray-900 mb-6">€0</div>
+          <ul class="space-y-2 text-sm text-gray-600">
+            <li class="flex items-center gap-2"><span class="text-brand">✓</span> 1 apartman</li>
+            <li class="flex items-center gap-2"><span class="text-brand">✓</span> Digitalni vodič + QR</li>
+            <li class="flex items-center gap-2"><span class="text-brand">✓</span> Obrazac za goste</li>
+            <li class="flex items-center gap-2"><span class="text-gray-300">✗</span> <span class="text-gray-400">AI značajke</span></li>
+            <li class="flex items-center gap-2"><span class="text-gray-300">✗</span> <span class="text-gray-400">Automatski emailovi</span></li>
+          </ul>
+        </div>
+
+        <!-- Pro -->
+        <div class="bg-brand rounded-2xl p-7 text-white relative">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white text-brand text-xs font-bold px-3 py-1 rounded-full shadow">
+            Najpopularniji
+          </div>
+          <h3 class="font-bold text-lg mb-1">Pro</h3>
+          <p class="text-sm text-white/60 mb-4">Most popular</p>
+          <div class="text-3xl font-bold mb-1">€5 <span class="text-lg font-normal opacity-70">/ 3 mj.</span></div>
+          <p class="text-sm text-white/60 mb-6">ili €20 / godišnje</p>
+          <ul class="space-y-2 text-sm text-white/90">
+            <li class="flex items-center gap-2"><span>✓</span> Neograničeni apartmani</li>
+            <li class="flex items-center gap-2"><span>✓</span> eVisitor podaci za kopiranje</li>
+            <li class="flex items-center gap-2"><span>✓</span> Automatski emailovi</li>
+            <li class="flex items-center gap-2"><span>✓</span> Sinkronizacija kalendara</li>
+            <li class="flex items-center gap-2"><span>✓</span> AI značajke</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div class="text-center">
+        <a href="/pricing" class="text-brand font-medium hover:underline text-sm">
+          Pogledajte sve što uključuje Pro plan →
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="bg-gray-900 text-white/60 py-10 px-4">
+    <div class="max-w-5xl mx-auto">
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div>
+          <p class="font-bold text-white text-base">CheckinPack.hr</p>
+          <p class="text-sm mt-0.5">Digitalni check-in za iznajmljivače · Made in Croatia 🇭🇷</p>
+        </div>
+        <nav class="flex flex-wrap gap-x-6 gap-y-2 text-sm justify-center">
+          <a href="/pricing" class="hover:text-white transition-colors">Cijene</a>
+          <a href="/login" class="hover:text-white transition-colors">Prijava</a>
+          <a href="/signup" class="hover:text-white transition-colors">Registracija</a>
+          <a href="/privacy" class="hover:text-white transition-colors">Privatnost</a>
+          <a href="/terms" class="hover:text-white transition-colors">Uvjeti</a>
+        </nav>
+      </div>
+      <div class="border-t border-white/10 mt-8 pt-6 text-xs text-center text-white/30">
+        © {new Date().getFullYear()} CheckinPack.hr · Sva prava pridržana
+      </div>
+    </div>
+  </footer>
+
 </Base>

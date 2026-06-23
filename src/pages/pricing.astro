@@ -1,99 +1,169 @@
 ---
 import Base from '../layouts/Base.astro'
-import { PLANS } from '../lib/stripe'
 ---
 
-<Base title="Cijene — CheckinPack">
-  <div class="min-h-screen bg-gray-50 py-16 px-4">
+<Base
+  title="Cijene — CheckinPack"
+  description="Jedan plan, sve uključeno. Počnite besplatno, nadogradite kad budete spremni."
+>
+  <div class="min-h-screen bg-cream py-16 px-4">
     <div class="max-w-4xl mx-auto">
 
-      <div class="text-center mb-12">
-        <h1 class="text-3xl font-bold text-gray-900 mb-3">Jedna cijena. Sve uključeno.</h1>
-        <p class="text-gray-500 text-lg">Plaćate jednom godišnje, pokriveni ste cijelu sezonu.</p>
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">Jedna cijena. Sve uključeno.</h1>
+        <p class="text-gray-500 text-sm">One price, everything included</p>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-6 mb-12">
+      <div class="grid md:grid-cols-2 gap-6 mb-8">
 
         <!-- Free -->
-        <div class="bg-white rounded-2xl border border-gray-200 p-8">
+        <div class="bg-white rounded-2xl border border-gray-200 p-8 flex flex-col">
           <div class="mb-6">
-            <h2 class="text-xl font-bold text-gray-900 mb-1">Besplatno</h2>
-            <div class="text-3xl font-bold text-gray-900">€0</div>
-            <p class="text-sm text-gray-500 mt-1">Za testiranje</p>
+            <h2 class="text-xl font-bold text-gray-900 mb-1">Besplatno <span class="text-sm font-normal text-gray-400">/ Free</span></h2>
+            <div class="text-3xl font-bold text-gray-900 mt-2">€0</div>
+            <p class="text-sm text-gray-400 mt-1">Za početak · To get started</p>
           </div>
-          <ul class="space-y-3 mb-8">
-            {PLANS.free.features.map((f) => (
-              <li class="flex items-start gap-2 text-sm text-gray-600">
-                <span class="text-gray-400 mt-0.5">✓</span>
-                <span>{f}</span>
-              </li>
-            ))}
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <span class="text-brand mt-0.5 shrink-0">✓</span>
+              <span>1 apartman <span class="text-gray-400">/ 1 apartment</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <span class="text-brand mt-0.5 shrink-0">✓</span>
+              <span>3 rezervacije mjesečno <span class="text-gray-400">/ 3 bookings/month</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <span class="text-brand mt-0.5 shrink-0">✓</span>
+              <span>Digitalni vodič za goste <span class="text-gray-400">/ Digital guest guide</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-600">
+              <span class="text-brand mt-0.5 shrink-0">✓</span>
+              <span>QR kod <span class="text-gray-400">/ QR code</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-400">
+              <span class="mt-0.5 shrink-0">✗</span>
+              <span>eVisitor automatizacija</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-400">
+              <span class="mt-0.5 shrink-0">✗</span>
+              <span>AI značajke</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-gray-400">
+              <span class="mt-0.5 shrink-0">✗</span>
+              <span>Automatski emailovi</span>
+            </li>
           </ul>
           <a
             href="/signup"
-            class="block w-full text-center px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+            class="block w-full text-center px-4 py-3 bg-gray-100 text-gray-700 font-medium rounded-xl hover:bg-gray-200 transition-colors"
           >
             Počnite besplatno
           </a>
         </div>
 
-        <!-- Pro (highlighted) -->
-        <div class="bg-brand rounded-2xl p-8 text-white relative">
-          <div class="absolute top-4 right-4 bg-white/20 text-white text-xs font-medium px-2.5 py-1 rounded-full">
-            Preporučeno
+        <!-- Pro -->
+        <div class="bg-brand rounded-2xl p-8 text-white relative flex flex-col">
+          <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-white text-brand text-xs font-bold px-3 py-1 rounded-full shadow">
+            Najpopularniji
           </div>
           <div class="mb-6">
             <h2 class="text-xl font-bold mb-1">Pro</h2>
-            <div class="text-3xl font-bold">€20 <span class="text-xl font-normal opacity-75">/ godišnje</span></div>
-            <p class="text-sm opacity-75 mt-1">ili €5 / 3 mj — bez obaveze</p>
+            <div class="text-3xl font-bold mt-2">€5 <span class="text-xl font-normal opacity-75">/ 3 mj.</span></div>
+            <p class="text-sm opacity-75 mt-1">ili €20 / godišnje · or €20/year</p>
           </div>
-          <ul class="space-y-3 mb-8">
-            {PLANS.pro.features.map((f) => (
-              <li class="flex items-start gap-2 text-sm text-white/90">
-                <span class="mt-0.5">✓</span>
-                <span>{f}</span>
-              </li>
-            ))}
+          <ul class="space-y-3 mb-8 flex-1">
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>Neograničeni apartmani <span class="opacity-60">/ Unlimited apartments</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>Neograničene rezervacije <span class="opacity-60">/ Unlimited bookings</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>eVisitor podaci za kopiranje <span class="opacity-60">/ eVisitor data ready to copy</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>Playwright auto-fill</span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>Automatski emailovi i podsjetnici <span class="opacity-60">/ Automated emails & reminders</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>Sinkronizacija s Booking.com/Airbnb <span class="opacity-60">/ Calendar sync</span></span>
+            </li>
+            <li class="flex items-start gap-2 text-sm text-white/90">
+              <span class="mt-0.5 shrink-0">✓</span>
+              <span>AI generator dobrodošlice i kućnog reda <span class="opacity-60">/ AI welcome & house rules</span></span>
+            </li>
           </ul>
           <div class="space-y-3">
             <button
-              id="btn-annual"
-              class="block w-full text-center px-4 py-3 bg-white text-brand font-semibold rounded-lg hover:bg-white/90 transition-colors"
+              id="btn-3month"
+              class="block w-full text-center px-4 py-3 bg-white text-brand font-semibold rounded-xl hover:bg-white/90 transition-colors"
             >
-              €20/godišnje — plati prije sezone
+              Probajte 3 mjeseca za €5
             </button>
             <button
-              id="btn-3month"
-              class="block w-full text-center px-4 py-3 bg-white/20 text-white font-medium rounded-lg hover:bg-white/30 transition-colors"
+              id="btn-annual"
+              class="block w-full text-center px-4 py-3 bg-white/20 text-white font-medium rounded-xl hover:bg-white/30 transition-colors"
             >
-              ili €5 / 3 mj
+              ili €20 / godišnje
             </button>
           </div>
         </div>
 
       </div>
 
+      <p class="text-center text-xs text-gray-400 mb-12">Bez skrivenih troškova · No hidden fees</p>
+
       <!-- FAQ -->
-      <div class="bg-white rounded-2xl border border-gray-200 p-8 max-w-2xl mx-auto">
-        <h2 class="font-semibold text-gray-900 mb-6">Često postavljana pitanja</h2>
-        <dl class="space-y-5">
-          <div>
-            <dt class="font-medium text-gray-800 mb-1">Mogu li otkazati?</dt>
-            <dd class="text-sm text-gray-600">Da, u bilo koje vrijeme. Upravljate pretplatom sami iz postavki — nema skrivenih ugovora.</dd>
+      <div class="max-w-2xl mx-auto space-y-4">
+        <h2 class="font-semibold text-gray-900 mb-4 text-lg">Česta pitanja</h2>
+
+        <details class="group bg-white rounded-2xl border border-gray-200">
+          <summary class="flex items-center justify-between p-5 cursor-pointer font-medium text-gray-900 list-none">
+            Mogu li promijeniti plan kasnije?
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">↓</span>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-gray-600">
+            Da, u bilo koje vrijeme iz postavki. Možete nadograditi na godišnji plan ili otkazati — bez ugovora.
           </div>
-          <div>
-            <dt class="font-medium text-gray-800 mb-1">Je li sigurno čuvanje podataka gostiju?</dt>
-            <dd class="text-sm text-gray-600">Da. Podaci putovnice su kriptirani, a automatski se brišu 30 dana nakon odjave.</dd>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-gray-200">
+          <summary class="flex items-center justify-between p-5 cursor-pointer font-medium text-gray-900 list-none">
+            Što se događa ako otkažem?
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">↓</span>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-gray-600">
+            Vraćate se na besplatni plan — svi vaši podaci i apartmani ostaju. Ništa se ne briše.
           </div>
-          <div>
-            <dt class="font-medium text-gray-800 mb-1">Trebam li kreditnu karticu za besplatni plan?</dt>
-            <dd class="text-sm text-gray-600">Ne. Besplatni plan ne zahtijeva nikakve podatke o plaćanju.</dd>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-gray-200">
+          <summary class="flex items-center justify-between p-5 cursor-pointer font-medium text-gray-900 list-none">
+            Prihvaćate li kartice iz Hrvatske?
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">↓</span>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-gray-600">
+            Da — sve glavne kartice putem Stripe-a (Visa, Mastercard, Amex). Plaćanje je sigurno i kriptirano.
           </div>
-          <div>
-            <dt class="font-medium text-gray-800 mb-1">Can I cancel? / Is it safe?</dt>
-            <dd class="text-sm text-gray-600">Yes, cancel anytime. Guest passport data is encrypted and auto-deleted 30 days after checkout. No credit card needed for the free plan.</dd>
+        </details>
+
+        <details class="group bg-white rounded-2xl border border-gray-200">
+          <summary class="flex items-center justify-between p-5 cursor-pointer font-medium text-gray-900 list-none">
+            Jesu li podaci gostiju sigurni?
+            <span class="text-gray-400 group-open:rotate-180 transition-transform">↓</span>
+          </summary>
+          <div class="px-5 pb-5 text-sm text-gray-600">
+            Da. Podaci putovnice su kriptirani i automatski se brišu 30 dana nakon odjave gosta. Pohranjujemo ih u EU (Supabase EU region).
           </div>
-        </dl>
+        </details>
       </div>
 
     </div>
@@ -103,6 +173,7 @@ import { PLANS } from '../lib/stripe'
 <script>
   async function checkout(interval: 'annual' | '3month') {
     const btn = document.getElementById(interval === 'annual' ? 'btn-annual' : 'btn-3month') as HTMLButtonElement
+    const original = btn.textContent
     btn.textContent = '...'
     btn.disabled = true
     try {
@@ -114,10 +185,11 @@ import { PLANS } from '../lib/stripe'
       const data = await res.json()
       if (data.url) window.location.href = data.url
       else {
-        btn.textContent = interval === 'annual' ? '€20/godišnje — plati prije sezone' : 'ili €5 / 3 mj'
+        btn.textContent = original
         btn.disabled = false
       }
     } catch {
+      btn.textContent = original
       btn.disabled = false
     }
   }

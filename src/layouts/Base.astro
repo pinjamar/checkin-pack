@@ -25,6 +25,18 @@ const { title, description = 'CheckinPack.hr - Digital welcome guides for Croati
     </style>
   </head>
   <body class="bg-cream text-gray-900 min-h-screen">
+    <nav class="sticky top-0 z-50 bg-cream/90 backdrop-blur border-b border-gray-200">
+      <div class="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
+        <a href="/" class="font-bold text-brand text-lg tracking-tight">CheckinPack.hr</a>
+        <div class="flex items-center gap-3">
+          <a href="/pricing" class="text-sm text-gray-600 hover:text-gray-900 hidden sm:block">Cijene</a>
+          <a href="/login" class="text-sm text-gray-600 hover:text-gray-900 hidden sm:block">Prijava</a>
+          <a href="/signup" class="text-sm px-4 py-2 bg-brand text-white rounded-lg font-medium hover:bg-brand-dark transition-colors">
+            Počnite besplatno
+          </a>
+        </div>
+      </div>
+    </nav>
     <slot />
   </body>
 </html>
