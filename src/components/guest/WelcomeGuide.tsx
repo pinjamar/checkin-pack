@@ -305,8 +305,8 @@ export default function WelcomeGuide({ data }: { data: GuideData }) {
         <div className="pt-8 pb-6 text-center">
           <p className="text-xs text-gray-400">
             Powered by{' '}
-            <a href="https://checkinpack.hr" className="text-brand font-medium">
-              CheckinPack.hr
+            <a href="https://checkin-pack.pages.dev" className="text-brand font-medium">
+              CheckinPack
             </a>
           </p>
         </div>

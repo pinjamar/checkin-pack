@@ -10,6 +10,7 @@ interface CronEnv {
   PUBLIC_SUPABASE_URL: string
   ADMIN_ALERT_EMAIL: string
   GEMINI_API_KEY?: string
+  SITE_URL?: string
 }
 
 function getSeason(dateStr: string): 'peak' | 'shoulder' | 'off' {
@@ -76,7 +77,8 @@ export async function sendScheduledPreArrivalEmails(env: CronEnv) {
 
   for (const booking of bookings) {
     try {
-      const registrationUrl = `https://checkinpack.hr/register/${booking.pre_arrival_token}`
+      const siteUrl = env.SITE_URL || 'https://checkin-pack.pages.dev'
+      const registrationUrl = `${siteUrl}/register/${booking.pre_arrival_token}`
 
       await resend.emails.send({
         from: 'CheckinPack <noreply@checkinpack.hr>',
@@ -135,7 +137,7 @@ export async function sendCheckoutReminders(env: CronEnv) {
     try {
       const apartment = (booking as any).apartments
       const checkoutTime = apartment.guide_content?.checkout_time || '11:00'
-      const guideUrl = `https://checkinpack.hr/m/${apartment.slug}`
+      const guideUrl = `${env.SITE_URL || 'https://checkin-pack.pages.dev'}/m/${apartment.slug}`
       const nudge = await getReviewNudge(booking, env)
 
       await resend.emails.send({

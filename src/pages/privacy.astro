@@ -1,0 +1,103 @@
+---
+import Base from '../layouts/Base.astro'
+---
+
+<Base
+  title="Politika privatnosti / Privacy Policy"
+  description="Politika privatnosti CheckinPack aplikacije."
+>
+  <div class="max-w-2xl mx-auto px-4 py-16">
+
+    <h1 class="text-3xl font-bold text-gray-900 mb-2">Politika privatnosti</h1>
+    <p class="text-sm text-gray-400 mb-8">Privacy Policy · Posljednje ažuriranje / Last updated: June 2026</p>
+
+    <div class="prose prose-sm max-w-none text-gray-700 space-y-8">
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">1. Tko smo / Who we are</h2>
+        <p>
+          CheckinPack je web aplikacija za upravljanje check-inom kratkoročnih iznajmljivača u Hrvatskoj.
+          Dostupna je na <a href="https://checkin-pack.pages.dev" class="text-brand">checkin-pack.pages.dev</a>.
+        </p>
+        <p class="mt-1 text-gray-400 text-sm">
+          CheckinPack is a web application for short-term rental check-in management in Croatia,
+          available at checkin-pack.pages.dev.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">2. Koji podaci se prikupljaju / What data is collected</h2>
+        <p class="font-medium text-gray-800 mb-1">Podaci vlasnika apartmana / Owner data:</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>Adresa e-pošte i lozinka (za prijavu) / Email address and password (login)</li>
+          <li>Naziv i adresa apartmana / Apartment name and address</li>
+          <li>Podaci o rezervacijama / Booking details</li>
+          <li>Podaci o plaćanju (obrađuje Stripe, mi ne pohranjujemo brojeve kartice) / Payment data (processed by Stripe — we never store card numbers)</li>
+        </ul>
+        <p class="font-medium text-gray-800 mt-4 mb-1">Podaci gostiju / Guest data:</p>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>Ime, prezime, datum rođenja, spol / First name, last name, date of birth, gender</li>
+          <li>Broj putovnice ili osobne iskaznice / Passport or ID number</li>
+          <li>Datum izdavanja dokumenta i država izdavanja / Document issue date and country</li>
+          <li>Adresa e-pošte (za slanje pre-arrival poveznice) / Email address (for pre-arrival link)</li>
+        </ul>
+        <p class="mt-3 text-sm text-gray-500">
+          Podaci gostiju prikupljaju se isključivo radi ispunjavanja zakonske obveze eVisitor prijave.
+          Vlasnik apartmana je voditelj obrade podataka gostiju; CheckinPack je izvršitelj obrade.
+        </p>
+        <p class="mt-1 text-sm text-gray-400">
+          Guest data is collected solely for the purpose of fulfilling the legal eVisitor registration requirement.
+          The apartment owner is the data controller for guest data; CheckinPack acts as data processor.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">3. Pohrana i brisanje podataka / Storage and deletion</h2>
+        <ul class="list-disc pl-5 space-y-1">
+          <li>Podaci gostiju automatski se brišu <strong>30 dana nakon datuma odjave</strong>. / Guest data is automatically deleted <strong>30 days after the departure date</strong>.</li>
+          <li>Podaci vlasnika pohranjuju se dok je račun aktivan. / Owner data is stored while the account is active.</li>
+          <li>Podaci se pohranjuju na Supabase infrastrukturi u EU regiji. / Data is stored on Supabase infrastructure in the EU region.</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">4. Dijeljenje podataka / Data sharing</h2>
+        <p>CheckinPack ne prodaje niti dijeli osobne podatke trećim stranama u komercijalne svrhe.</p>
+        <p class="text-sm text-gray-400 mt-1">CheckinPack does not sell or share personal data with third parties for commercial purposes.</p>
+        <p class="mt-3">Koristimo sljedeće podprocesore / We use the following sub-processors:</p>
+        <ul class="list-disc pl-5 space-y-1 mt-2">
+          <li><strong>Supabase</strong> — pohrana podataka / data storage (EU)</li>
+          <li><strong>Stripe</strong> — obrada plaćanja / payment processing</li>
+          <li><strong>Resend</strong> — slanje e-pošte / email delivery</li>
+          <li><strong>Cloudflare Pages</strong> — hosting aplikacije / application hosting</li>
+          <li><strong>Google Gemini</strong> — AI generiranje sadržaja (bez pohrane korisničkih podataka) / AI content generation (no user data retained)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">5. Vaša prava / Your rights</h2>
+        <p>Imate pravo na pristup, ispravak i brisanje vaših podataka. Za zahtjeve kontaktirajte nas na:</p>
+        <p class="text-sm text-gray-400 mt-1">You have the right to access, correct, and delete your data. For requests, contact us at:</p>
+        <p class="mt-2 font-medium text-brand">pinjamar@gmail.com</p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">6. Kolačići / Cookies</h2>
+        <p>
+          Koristimo isključivo funkcionalne kolačiće potrebne za prijavu (session token).
+          Ne koristimo kolačiće za praćenje ili marketing.
+        </p>
+        <p class="text-sm text-gray-400 mt-1">
+          We use only functional cookies required for login (session token). No tracking or marketing cookies.
+        </p>
+      </section>
+
+      <section>
+        <h2 class="text-lg font-semibold text-gray-900 mb-2">7. Kontakt / Contact</h2>
+        <p>Za sva pitanja vezana uz privatnost: <a href="mailto:pinjamar@gmail.com" class="text-brand">pinjamar@gmail.com</a></p>
+        <p class="text-sm text-gray-400 mt-1">For any privacy-related questions: pinjamar@gmail.com</p>
+      </section>
+
+    </div>
+  </div>
+</Base>

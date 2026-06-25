@@ -84,7 +84,7 @@ export const POST: APIRoute = async (context) => {
             <h2>Registration received</h2>
             <p><strong>${firstName}</strong>${guests.length > 1 ? ` and ${guests.length - 1} other guest(s)` : ''} submitted pre-arrival registration for <strong>${apartment.name}</strong>.</p>
             <p>Log in to your dashboard to view the eVisitor data and register them.</p>
-            <p><a href="https://checkinpack.hr/dashboard" style="display:inline-block;padding:12px 24px;background-color:#1a6b4a;color:white;text-decoration:none;border-radius:8px;font-weight:500;">Open Dashboard</a></p>
+            <p><a href="https://checkin-pack.pages.dev/dashboard" style="display:inline-block;padding:12px 24px;background-color:#1a6b4a;color:white;text-decoration:none;border-radius:8px;font-weight:500;">Open Dashboard</a></p>
             <p style="color:#666;font-size:13px;">Data will be automatically deleted 30 days after departure.</p>
           `,
         })

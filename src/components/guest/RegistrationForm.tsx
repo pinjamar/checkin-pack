@@ -276,7 +276,7 @@ export default function RegistrationForm({ token, apartmentName, arrivalDate }: 
       </form>
 
       <p className="mt-6 text-center text-xs text-gray-400">
-        Powered by <a href="https://checkinpack.hr" className="text-brand">CheckinPack.hr</a>
+        Powered by <a href="https://checkin-pack.pages.dev" className="text-brand">CheckinPack</a>
       </p>
     </div>
   )
